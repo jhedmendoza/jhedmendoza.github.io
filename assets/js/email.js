@@ -28,7 +28,7 @@
                     $('.send-btn .btn-msg').text('Send');
                 },
                 error: function (xhr) {
-                    alert("There\'s something wrong. Please try again later.");
+                    alert("Something went wrong. Please try again later.");
                 }
             });
         })
