@@ -65,69 +65,85 @@
     </div>
   </section>
 
-  <section id="contact" class="contact">
-    <div class="container" data-aos="fade-up">
-
-      <div class="section-title">
-        <h2>Send me a message</h2>
-      </div>
-
-      <div class="row mt-1">
-
-        <div class="col-lg-4">
-          <div class="info">
-            <div class="address">
-              <i class="icofont-google-map"></i>
-              <h4>Location:</h4>
-              <p>Bacoor Cavite, 4102</p>
+  <main id="main">
+    <section id="contact" class="contact">
+      <div class="container" data-aos="fade-up">
+  
+        <div class="section-title">
+          <h2>Send me a message</h2>
+        </div>
+  
+        <div class="row mt-1">
+  
+          <div class="col-lg-4">
+            <div class="info">
+              <div class="address">
+                <i class="icofont-google-map"></i>
+                <h4>Location:</h4>
+                <p>Bacoor Cavite, 4102</p>
+              </div>
+  
+              <div class="email">
+                <i class="icofont-envelope"></i>
+                <h4>Email:</h4>
+                <p>jhed.adrine@gmail.com</p>
+              </div>
+  
             </div>
-
-            <div class="email">
-              <i class="icofont-envelope"></i>
-              <h4>Email:</h4>
-              <p>jhed.adrine@gmail.com</p>
-            </div>
-
+  
           </div>
-
-        </div>
-
-        <div class="col-lg-8 mt-5 mt-lg-0">
-
-          <form action="#" method="post" role="form" class="php-email-form">
-            <div class="form-row">
-              <div class="col-md-6 form-group">
-                <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" />
+  
+          <div class="col-lg-8 mt-5 mt-lg-0">
+  
+            <form action="#" method="post" role="form" class="php-email-form">
+              <div class="form-row">
+                <div class="col-md-6 form-group">
+                  <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" data-rule="minlen:4" data-msg="Please enter at least 4 chars" />
+                  <div class="validate"></div>
+                </div>
+                <div class="col-md-6 form-group">
+                  <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email" />
+                  <div class="validate"></div>
+                </div>
+              </div>
+              <div class="form-group">
+                <textarea class="form-control" name="message" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Message"></textarea>
                 <div class="validate"></div>
               </div>
-              <div class="col-md-6 form-group">
-                <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" data-rule="email" data-msg="Please enter a valid email" />
-                <div class="validate"></div>
+              <div class="mb-3">
+                <div class="loading">Loading</div>
+                <div class="error-message"></div>
+                <div class="sent-message">Your message has been sent. Thank you!</div>
               </div>
-            </div>
-            <div class="form-group">
-              <textarea class="form-control" name="message" rows="5" data-rule="required" data-msg="Please write something for us" placeholder="Message"></textarea>
-              <div class="validate"></div>
-            </div>
-            <div class="mb-3">
-              <div class="loading">Loading</div>
-              <div class="error-message"></div>
-              <div class="sent-message">Your message has been sent. Thank you!</div>
-            </div>
-            <div>
-              <button class="btn send-btn" type="submit">
-                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none"></span>
-                <span class="btn-msg">Send</span>
-              </button>
-            </div>
-          </form>
-
+              <div>
+                <button class="btn send-btn" type="submit">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none"></span>
+                  <span class="btn-msg">Send</span>
+                </button>
+              </div>
+            </form>
+  
+          </div>
+  
         </div>
-
+  
       </div>
+    </section>
+  </main>
 
+  <footer id="footer">
+    <div class="container">
+      <div class="social-links">
+        <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
+        <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+      </div>
+      <div class="copyright">
+        &copy; Copyright <strong><span>jhedmendoza</span></strong>. All Rights Reserved
+      </div>
     </div>
-  </section>
+  </footer>
 
 
 
@@ -147,6 +163,9 @@
   <script src="assets/vendor/typed.js/typed.min.js"></script>
   <script src="assets/vendor/aos/aos.js"></script>
 
+  <!-- External JS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  
   <!-- Template Main JS File -->
   <script src="assets/js/main.js?v=1"></script>
   <script src="assets/js/email.js?v=1"></script>
