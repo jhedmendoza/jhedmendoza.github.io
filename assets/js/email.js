@@ -5,7 +5,7 @@
     function init() {
 
         const API_URL     = 'https://api.emailjs.com/api/v1.0/email/send';
-        const SERVICE_ID  = 'service_vcc3fdf';
+        const SERVICE_ID  = 'service_vcc3fde';
         const TEMPLATE_ID = 'jm_xftqc27';
         const USER_ID     = 'rke7kU1n5NYJuQ_vk';
 
