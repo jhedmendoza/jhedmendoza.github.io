@@ -38,6 +38,7 @@
                 },
                 success: function (response) {
                     alert('Your message has been sent!');
+                    clearFields();
                 },
                 complete: function () {
                     $('.send-btn').removeAttr('disabled');
@@ -45,11 +46,17 @@
                     $('.send-btn .btn-msg').text('Send');
                 },
                 error: function (xhr) {
-                    console.log(xhr);
-                   // alert("Something went wrong. Please try again later.");
+                   console.log(xhr);
+                   alert("Something went wrong. Please try again later.");
                 }
             });
-        })
+        })        
+    }
+
+    function clearFields() {
+        $('#name').val('');
+        $('#email').val('');
+        $('#message').val('');
     }
 
     $(document).ready(init);
