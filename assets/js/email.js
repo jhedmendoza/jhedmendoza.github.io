@@ -9,6 +9,31 @@
         const TEMPLATE_ID = 'jm_xftqc27';
         const USER_ID     = 'rke7kU1n5NYJuQ_vk';
 
+        var contactForm = $('#contact-form');
+
+        contactForm.validate({
+            rules: {
+                name: {
+                    required: true,
+                },
+                email: {
+                    required: true,
+                    email: true
+                },
+                message: {
+                    required: true,
+                }
+            },
+            messages: {
+                name: 'Please enter your name.',
+                email: {
+                    required: 'Please enter your email.',
+                    email: 'Please enter a valid email address.',
+                },
+                message: 'Please write something for me.'
+            }
+        });
+
         $('.send-btn').on('click', function (e) {
             e.preventDefault();
 
@@ -25,31 +50,37 @@
                 }
             };
 
-            xhr = $.ajax({
-                url: API_URL,
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                
-                beforeSend: function () {
-                    $('.send-btn').prop('disabled', true);
-                    $('.send-btn .spinner-border').show();
-                    $('.send-btn .btn-msg').text('Sending...');
-                },
-                success: function (response) {
-                    alert('Your message has been sent!');
-                    clearFields();
-                },
-                complete: function () {
-                    $('.send-btn').removeAttr('disabled');
-                    $('.send-btn .spinner-border').hide();
-                    $('.send-btn .btn-msg').text('Send');
-                },
-                error: function (xhr) {
-                   console.log(xhr);
-                   alert("Something went wrong. Please try again later.");
-                }
-            });
+            if ( contactForm.valid() ) {
+
+                xhr = $.ajax({
+                    url: API_URL,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    
+                    beforeSend: function () {
+                        $('.send-btn').prop('disabled', true);
+                        $('.send-btn .spinner-border').show();
+                        $('.send-btn .btn-msg').text('Sending...');
+                    },
+                    success: function (response) {
+                        $('.sent-message').show().fadeOut(7000);
+                        clearFields();
+                    },
+                    complete: function () {
+                        $('.send-btn').removeAttr('disabled');
+                        $('.send-btn .spinner-border').hide();
+                        $('.send-btn .btn-msg').text('Send');
+                    },
+                    error: function (xhr) {
+                    console.log(xhr);
+                    alert("Something went wrong. Please try again later.");
+                    }
+                });
+            }
+            else {
+            }
+
         })        
     }
 
