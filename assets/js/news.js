@@ -37,7 +37,7 @@
                         template += '<div class="icon-box iconbox-'+colors[i]+'">';
                         template += '<div class="icon">';
                         template += '<svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">';
-                        template +=     '<path stroke="none" stroke-width="0" fill="#f5f5f5" d="'+svg[i]+'"></path>';
+                        template +=  '<path stroke="none" stroke-width="0" fill="#f5f5f5" d="'+svg[i]+'"></path>';
                         template += '</svg>';
                         template += '<i class="bx '+icons[i]+'"></i>';
                         template += '</div>';
