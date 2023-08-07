@@ -64,7 +64,7 @@
                         $('.send-btn .btn-msg').text('Sending...');
                     },
                     success: function (response) {
-                        $('.sent-message').show().fadeOut(7000);
+                        $('.sent-message').show().fadeOut(10000);
                         clearFields();
                     },
                     complete: function () {
@@ -73,8 +73,8 @@
                         $('.send-btn .btn-msg').text('Send');
                     },
                     error: function (xhr) {
-                    console.log(xhr);
-                    alert("Something went wrong. Please try again later.");
+                        console.log(xhr);
+                        alert("Something went wrong. Please try again later.");
                     }
                 });
             }
