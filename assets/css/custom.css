@@ -1,3 +1,7 @@
 label.error {font-size:12px;color:red}
 .news-container a {color: #272829;}
 .news-container p, .news-container h4 {text-align:left}
+.news-author i, .news-date i {color:#707070 !important; margin-right:5px}
+.modal-title {color:#ffffff}
+.modal-date {font-size:12px}
+.n-content {font-size:13px}
