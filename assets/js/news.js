@@ -18,12 +18,13 @@
             let id = $(this).attr('data-id');
             let title = $(this).find('.news-title').text();
             let backgroundColor = $(this).attr('data-color');
+            let newsSelector = $('#newsContentModal');
 
-            $('#newsContentModal').find('.modal-header').css('background-color', backgroundColor);
-            $('#newsContentModal').find('.modal-title').html(title);
-            $('#newsContentModal').find('.modal-date').html(content[id].post_date);
-            $('#newsContentModal').find('.n-content').html(content[id].post_content);
-            $('#newsContentModal').modal('show'); 
+            $(newsSelector).find('.modal-header').css('background-color', backgroundColor);
+            $(newsSelector).find('.modal-title').html(title);
+            $(newsSelector).find('.modal-date').html(content[id].post_date);
+            $(newsSelector).find('.n-content').html(content[id].post_content);
+            $(newsSelector).modal('show'); 
         });
 
     }

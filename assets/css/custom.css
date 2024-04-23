@@ -3,7 +3,9 @@ label.error {font-size:12px;color:red}
 #newsContentModal {z-index:9999}
 .news-container a {color: #272829;}
 .news-container p, .news-container h4 {text-align:left}
+.news-author, .news-date {font-size:12px !important}
 .news-author i, .news-date i {color:#707070 !important; margin-right:5px}
 .modal-title {color:#ffffff}
 .modal-date {font-size:12px}
 .n-content {font-size:13px}
+.news-title {font-family: 'Poppins';color:#45505b}
