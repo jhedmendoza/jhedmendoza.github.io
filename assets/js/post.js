@@ -8,6 +8,8 @@
         var postId = urlParams.get('postId');
 
         getPostContent(postId);
+
+        document.querySelector('title').textContent = $('.post-heading h1').text();
     }
 
     function getPostContent(postId) {
@@ -22,6 +24,7 @@
                 let dateCreated = date.toISOString().split('T')[0].replace(/-/g, '-');
                 let excerpt = response.excerpt;
 
+                $('.masthead').css('background-image', 'url(' + response.featured_image + ')');
 
                 $('.post-heading h1').html(response.title);
                 $('.main-content').html(response.content);  
@@ -37,4 +40,5 @@
     }
 
     $(document).ready(init);
+
 })(jQuery);
