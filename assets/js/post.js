@@ -7,11 +7,7 @@
         var urlParams = new URLSearchParams(window.location.search);
         var postId = urlParams.get('postId');
 
-        console.log(postId);
-
         getPostContent(postId);
-
-
     }
 
     function getPostContent(postId) {
