@@ -10796,7 +10796,7 @@ header.masthead .post-heading .meta a {
   }
 }
 
-.has-small-font-size {font-size:18px}
-.has-medium-font-size {font-size:28px}
-.has-large-font-size {font-size:38px}
-.has-x-large-font-size {font-size:48px}
+.has-small-font-size {font-size:1rem}
+.has-medium-font-size {font-size:1.5rem}
+.has-large-font-size {font-size:1.75rem}
+.has-x-large-font-size {font-size:2rem}
