@@ -12,21 +12,6 @@
 
         getBlog();
 
-        $(document).on('click', '.news-content', function(e) {
-            e.preventDefault();
-
-            let id = $(this).attr('data-id');
-            let title = $(this).find('.news-title').text();
-            let backgroundColor = $(this).attr('data-color');
-            let newsSelector = $('#newsContentModal');
-
-            $(newsSelector).find('.modal-header').css('background-color', backgroundColor);
-            $(newsSelector).find('.modal-title').html(title);
-            $(newsSelector).find('.modal-date').html(content[id].post_date);
-            $(newsSelector).find('.n-content').html(content[id].post_content);
-            $(newsSelector).modal('show'); 
-        });
-
     }
 
     function getBlog() {
@@ -70,16 +55,16 @@
                         content.push(data);
 
                         template += '<div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">';
-                        template += '<a href="#" class="icon-box iconbox-'+colors[i]+' w-100 news-content" data-id="'+i+'" data-color="'+hexColors[i]+'">';
+                        template += '<a href="post.html?slug='+e.slug+'&postId='+e.ID+'" class="icon-box iconbox-'+colors[i]+' w-100 news-content" data-id="'+i+'" data-color="'+hexColors[i]+'">';
                         template += '<div class="icon">';
                         template += '<svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">';
                         template += '<path stroke="none" stroke-width="0" fill="#f5f5f5" d="'+svg[i]+'"></path>';
                         template += '</svg>';
                         template += '<i class="bx '+icons[i]+'"></i>';
                         template += '</div>';
+                        template += '<p class="news-date mb-0 float-right">'+data.post_date+'</p>';
                         template += '<h4 class="news-title mb-1">'+e.title+'</h4>';
-                        template += '<p class="news-date mb-0 float-right"><i class="icofont-ui-clock"></i>'+data.post_date+'</p>';
-                        template += '<p class="news-author mb-1"><i class="icofont-user"></i>'+data.post_author+'</p>';
+                        template += '<p></p>';
                         template += '<p>'+data.post_exerpt+'</p>';
                         template += '</a>';
                         template += '</div>';

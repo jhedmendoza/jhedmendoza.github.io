@@ -9,6 +9,7 @@ label.error {font-size:12px;color:red}
 .modal-date {font-size:12px}
 .n-content {font-size:13px}
 .news-title {font-family: 'Poppins';color:#45505b}
+.news-date {margin-top:11px}
 
 #particles-js {
     width: 100%;
