@@ -20,10 +20,16 @@
 
                 let date = new Date(response.date);
                 let dateCreated = date.toISOString().split('T')[0].replace(/-/g, '-');
+                let excerpt = response.excerpt;
+
 
                 $('.post-heading h1').html(response.title);
                 $('.main-content').html(response.content);  
                 $('.date-posted').html(dateCreated);
+
+                $('meta[name="title"]').attr('content', response.title);
+                $('meta[name="description"]').attr('content', excerpt.replace('<p>', '').replace('</p>', '') );
+                $('meta[name="image"]').attr('content', response.featured_image);
             },
             complete: function () {},
             error: function (xhr) {}
