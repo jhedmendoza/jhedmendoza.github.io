@@ -10800,3 +10800,9 @@ header.masthead .post-heading .meta a {
 .has-medium-font-size {font-size:1.5rem}
 .has-large-font-size {font-size:1.75rem}
 .has-x-large-font-size {font-size:2rem}
+
+pre.wp-block-code {
+  border-left: 6px solid #3498DB;
+  background-color: #F5F7F9;
+  padding: 5px;
+}
