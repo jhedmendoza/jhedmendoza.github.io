@@ -28,6 +28,8 @@
 
                 $('.post-heading h1').html(response.title);
                 $('.main-content').html(response.content);  
+
+                $('.date-posted').before('<i class="fa-regular fa-calendar-days me-2">');
                 $('.date-posted').html(dateCreated);
 
                 $('meta[name="title"]').attr('content', response.title);
