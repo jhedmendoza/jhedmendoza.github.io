@@ -6,10 +6,42 @@
 
         var urlParams = new URLSearchParams(window.location.search);
         var postId = urlParams.get('postId');
-
-        getPostContent(postId);
-
+        
+        if (postId === null) 
+            getPosts();
+        
+        else 
+            getPostContent(postId);
+        
+       
         document.querySelector('title').textContent = $('.post-heading h1').text();
+    }
+
+    function getPosts() {
+        $.ajax({
+            url: WP_API_POST_URL,
+            type: 'GET',
+            beforeSend: function () {},
+            success: function (response) {
+
+                $.each(response.posts, function(i, e) {
+
+                    let date = new Date(e.date);
+                    let dateCreated = date.toISOString().split('T')[0].replace(/-/g, '-');
+
+                    $('.post-preview .post-title').text(e.title);
+                    $('.post-preview .post-subtitle').html(e.excerpt)
+                    $('.post-preview a').attr('href', 'post.html?slug='+e.slug+'&postId='+e.ID);
+                    $('.post-meta .date-posted').html(dateCreated);
+
+                    $('.post-preview').after('<hr class="my-4" />');
+                })
+
+
+            },
+            complete: function () {},
+            error: function (xhr) {}
+        }); 
     }
 
     function getPostContent(postId) {
