@@ -24,19 +24,29 @@
             beforeSend: function () {},
             success: function (response) {
 
+                let template = '';
+
                 $.each(response.posts, function(i, e) {
 
                     let date = new Date(e.date);
                     let dateCreated = date.toISOString().split('T')[0].replace(/-/g, '-');
+                    let excerpt = e.excerpt;
+                        excerpt = excerpt.replace('<p>', '').replace('</p>', '')
 
-                    $('.post-preview .post-title').text(e.title);
-                    $('.post-preview .post-subtitle').html(e.excerpt)
-                    $('.post-preview a').attr('href', 'post.html?slug='+e.slug+'&postId='+e.ID);
-                    $('.post-meta .date-posted').html(dateCreated);
+                    template +='<div class="post-preview">';
+                    template +='<a href="post.html?slug='+e.slug+'&postId='+e.ID+'">';
+                    template +='<h2 class="post-title">'+e.title+'</h2>';
+                    template +='<p style="margin-top:0" class="post-subtitle">'+excerpt+'</p>';
+                    template +='</a>';
+                    template +='<p class="post-meta">';
+                    template +='Posted on <span class="date-posted">'+dateCreated+'</span>';
+                    template +='</p>';
+                    template +='</div>';
+                    template+='<hr class="my-4" />';
 
-                    $('.post-preview').after('<hr class="my-4" />');
-                })
+                });
 
+                $('.posts-contenter').html(template);
 
             },
             complete: function () {},
