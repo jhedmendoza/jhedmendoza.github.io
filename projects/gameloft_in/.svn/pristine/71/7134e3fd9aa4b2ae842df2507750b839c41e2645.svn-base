@@ -1,0 +1,206 @@
+@font-face {
+    font-family: 'Gameloft Icons';
+    src:    url('fonts/GameloftIcons.eot?o07vra');
+    src:    url('fonts/GameloftIcons.eot?o07vra#iefix') format('embedded-opentype'),
+        url('fonts/GameloftIcons.ttf?o07vra') format('truetype'),
+        url('fonts/GameloftIcons.woff?o07vra') format('woff'),
+        url('fonts/GameloftIcons.svg?o07vra#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'Gameloft Icons' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-arrow_6_down:before {
+    content: "\e938";
+}
+.icon-arrow_6_up:before {
+    content: "\e939";
+}
+.icon-arrow_6_left:before {
+    content: "\e93a";
+}
+.icon-arrow_6_right:before {
+    content: "\e93b";
+}
+.icon-Notification_Neutral_Icon:before {
+    content: "\e900";
+}
+.icon-Notification_Positive_Icon:before {
+    content: "\e901";
+}
+.icon-Notification_Negative_Icon:before {
+    content: "\e902";
+}
+.icon-Notification_General_Icon:before {
+    content: "\e903";
+}
+.icon-sns_blogger:before {
+    content: "\e904";
+}
+.icon-sns_instagram_1:before {
+    content: "\e905";
+}
+.icon-sns_weibo_1:before {
+    content: "\e906";
+}
+.icon-misc_forum:before {
+    content: "\e907";
+}
+.icon-misc_sns:before {
+    content: "\e908";
+}
+.icon-magnifying_glass_2:before {
+    content: "\e909";
+}
+.icon-gameloft_logo_2_line:before {
+    content: "\e90a";
+}
+.icon-gameloft_logo_2_letter:before {
+    content: "\e90b";
+}
+.icon-arrow_5_left:before {
+    content: "\e90c";
+}
+.icon-arrow_5_up:before {
+    content: "\e90d";
+}
+.icon-arrow_5_right:before {
+    content: "\e90e";
+}
+.icon-arrow_5_down:before {
+    content: "\e90f";
+}
+.icon-arrow_4_left:before {
+    content: "\e910";
+}
+.icon-arrow_4_up:before {
+    content: "\e911";
+}
+.icon-arrow_4_right:before {
+    content: "\e912";
+}
+.icon-arrow_4_down:before {
+    content: "\e913";
+}
+.icon-copyright:before {
+    content: "\e914";
+}
+.icon-check:before {
+    content: "\e915";
+}
+.icon-arrow_3_down:before {
+    content: "\e916";
+}
+.icon-arrow_3_left:before {
+    content: "\e917";
+}
+.icon-arrow_3_up:before {
+    content: "\e918";
+}
+.icon-arrow_3_right:before {
+    content: "\e919";
+}
+.icon-sns_googleplus_1:before {
+    content: "\e91a";
+}
+.icon-sns_linkedin_2:before {
+    content: "\e91b";
+}
+.icon-close_btn:before {
+    content: "\e91c";
+}
+.icon-sns_vine_2:before {
+    content: "\e91d";
+}
+.icon-sns_vine_1:before {
+    content: "\e91e";
+}
+.icon-sns_tumblr_2:before {
+    content: "\e91f";
+}
+.icon-sns_tumblr_1:before {
+    content: "\e920";
+}
+.icon-sns_pinterest_1:before {
+    content: "\e921";
+}
+.icon-sns_linkedin_3:before {
+    content: "\e922";
+}
+.icon-sns_linkedin_1:before {
+    content: "\e923";
+}
+.icon-arrow_1_left:before {
+    content: "\e924";
+}
+.icon-misc_subscribe:before {
+    content: "\e925";
+}
+.icon-sns_youtube_2:before {
+    content: "\e926";
+}
+.icon-sns_youtube_1:before {
+    content: "\e927";
+}
+.icon-sns_twitter_1:before {
+    content: "\e928";
+}
+.icon-sns_twitch_2:before {
+    content: "\e929";
+}
+.icon-sns_twitch_1:before {
+    content: "\e92a";
+}
+.icon-sns_facebook_2:before {
+    content: "\e92b";
+}
+.icon-sns_facebook_1:before {
+    content: "\e92c";
+}
+.icon-play_btn:before {
+    content: "\e92d";
+}
+.icon-magnifying_glass_1:before {
+    content: "\e92e";
+}
+.icon-gameloft_logo_1_line:before {
+    content: "\e92f";
+}
+.icon-gameloft_logo_1_letter:before {
+    content: "\e930";
+}
+.icon-arrow_2_up:before {
+    content: "\e931";
+}
+.icon-arrow_2_right:before {
+    content: "\e932";
+}
+.icon-arrow_2_left:before {
+    content: "\e933";
+}
+.icon-arrow_2_down:before {
+    content: "\e934";
+}
+.icon-arrow_1_up:before {
+    content: "\e935";
+}
+.icon-arrow_1_right:before {
+    content: "\e936";
+}
+.icon-arrow_1_down:before {
+    content: "\e937";
+}
