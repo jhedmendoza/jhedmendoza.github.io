@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-        <title></title>
+        <title>Blog List</title>
 
         <meta property="og:type" content="website" />
         <meta property="og:url" name="url" content="" />
@@ -35,43 +35,50 @@
 
     </head>
     <body>
-        <!-- Navigation-->
-        <div id="header" class="d-flex flex-column justify-content-center">
-            <nav class="nav-menu">
-              <ul>
-                <li><a href="/"><i class="bx bx-home"></i> <span>Home</span></a></li>
-              </ul>
-            </nav>
-        </div>
-        <!-- Page Header-->
-        <header class="masthead">
-            <div class="container position-relative px-4 px-lg-5">
+        <div id="blog-app">
+            <!-- Navigation-->
+            <div id="site-header"></div>
+            <!-- header partial injected into #site-header -->
+            <!-- Page Header-->
+            <header class="masthead">
+                <div class="container position-relative px-4 px-lg-5">
+                    <div class="row gx-4 gx-lg-5 justify-content-center">
+                        <div class="col-md-10 col-lg-8 col-xl-7">
+                            <div class="post-heading">
+                                <h1>Blog List</h1>
+                                <span class="meta">Latest posts from my blog</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7">
-                        <div class="post-heading"></div>
+                    <div class="col-md-10 col-lg-8 col-xl-7 posts-contenter">
+                        <div v-if="isLoading" class="text-center">Loading posts...</div>
+                        <div v-else-if="error" class="text-center text-danger">{{ error }}</div>
+                        <div v-else>
+                            <div v-for="post in posts" :key="post.post_id" class="post-preview">
+                                <a :href="`post.html?slug=${post.slug}&postId=${post.post_id}`">
+                                    <h2 class="post-title">{{ post.title }}</h2>
+                                    <p style="margin-top:0" class="post-subtitle">{{ post.excerpt }}</p>
+                                </a>
+                                <p class="post-meta">Posted on <span class="date-posted">{{ post.date }}</span></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </header>
-        <div class="container px-4 px-lg-5">
-            <div class="row gx-4 gx-lg-5 justify-content-center">
-                <div class="col-md-10 col-lg-8 col-xl-7 posts-contenter">
-
-                    <!-- Pager-->
-                    <!-- <div class="d-flex justify-content-end mb-4"><a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a></div> -->
-                </div>
-            </div>
         </div>
 
-        <script src="assets/vendor/jquery/jquery.min.js"></script>
-
-        <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-
-        <!-- Font Awesome icons (free version)-->
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-        
-        <!-- Core theme JS-->
-        <script src="assets/js/post.js"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+        <script src="assets/js/partials.js"></script>
+        <script src="assets/js/blog-app.js"></script>
+        <script>
+          // wait until partials are loaded before mounting blog-app (blog-app listens to #blog-app mount)
+          document.addEventListener('partials:loaded', function(){
+            // nothing needed here; blog-app mounts on DOMContentLoaded
+          });
+        </script>
     </body>
 </html>

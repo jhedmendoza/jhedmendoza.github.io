@@ -42,245 +42,87 @@
 </head>
 
 <body>
-  <div id="particles-js"></div>
-  <button type="button" class="mobile-nav-toggle d-xl-none"><i class="icofont-navigation-menu"></i></button>
+  <div id="app">
+    <div id="site-header"></div>
+    <!-- header partial injected into #site-header -->
 
-  <header id="header" class="d-flex flex-column justify-content-center">
-    <nav class="nav-menu">
-      <ul>
-        <li class="active"><a href="#hero"><i class="bx bx-home"></i> <span>Home</span></a></li>
-        <!-- <li><a href="#about"><i class="bx bx-user"></i> <span>About</span></a></li> -->
-        <!-- <li><a href="#job-experience"><i class="bx bx-file-blank"></i> <span>Job Experience</span></a></li> -->
-        <li><a href="#news"><i class="bx bx-news"></i> <span>Blog</span></a></li>
-        <li><a href="#portfolio"><i class="bx bx-book-content"></i> <span>Portfolio</span></a></li> 
-        <li><a href="#contact"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <section id="hero" class="d-flex flex-column justify-content-center">
-    <div class="container" data-aos="zoom-in" data-aos-delay="100">
-      <h1>Jhed Mendoza</h1>
-      <p>I'm <span class="typed" data-typed-items="a Web Developer, a Freelancer, a Dreamer, a Father"></span></p>
-      <div class="social-links">
-        <a href="https://twitter.com/_jhedm"  target="_blank" class="twitter"><i class="bx bxl-twitter"></i></a>
-        <a href="https://www.instagram.com/jhedmendoza/"  target="_blank" class="instagram"><i class="bx bxl-instagram"></i></a>
-        <a href="https://www.linkedin.com/in/jhedmendoza/" target="_blank" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+    <section id="hero" class="d-flex flex-column justify-content-center">
+      <div class="container">
+        <h1>Jhed Mendoza</h1>
+        <p>I'm <span class="typed">{{ typedText }}</span></p>
+        <div class="social-links">
+          <a href="https://twitter.com/_jhedm" target="_blank" class="twitter"><i class="bx bxl-twitter"></i></a>
+          <a href="https://www.instagram.com/jhedmendoza/" target="_blank" class="instagram"><i class="bx bxl-instagram"></i></a>
+          <a href="https://www.linkedin.com/in/jhedmendoza/" target="_blank" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
   <main id="main">
 
     <section id="news" class="services">
-      <div class="container" data-aos="fade-up">
+      <div class="container">
         <div class="section-title">
           <h2>Blog</h2>
         </div>
-        <div class="row news-container"></div>
+        <div class="row news-container">
+          <template v-if="isLoadingPosts">
+            <div class="col-12 text-center">Loading latest posts...</div>
+          </template>
+          <template v-else-if="postsError">
+            <div class="col-12 text-center text-danger">{{ postsError }}</div>
+          </template>
+          <template v-else>
+            <div v-for="post in posts" :key="post.post_id" class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+              <a :href="`post.html?slug=${post.post_slug}&postId=${post.post_id}`" class="icon-box iconbox-blue w-100 news-content">
+                <div class="icon">
+                  <svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke="none" stroke-width="0" fill="#f5f5f5" d="M300,521.0016835830174C376.1290562159157,517.8887921683347,466.0731472004068,529.7835943286574,510.70327084640275,468.03025145048787C554.3714126377745,407.6079735673963,508.03601936045806,328.9844924480964,491.2728898941984,256.3432110539036C474.5976632858925,184.082847569629,479.9380746630129,96.60480741107993,416.23090153303,58.64404602377083C348.86323505073057,18.502131276798302,261.93793281208167,40.57373210992963,193.5410806939664,78.93577620505333C130.42746243093433,114.334589627462,98.30271207620316,179.96522072025542,76.75703585869454,249.04625023123273C51.97151888228291,328.5150500222984,13.704378332031375,421.85034740162234,66.52175969318436,486.19268352777647C119.04800174914682,550.1803526380478,217.28368757567262,524.383925680826,300,521.0016835830174"/>
+                  </svg>
+                  <i class="bx bx-file"></i>
+                </div>
+                <p class="news-date mb-0 float-right">{{ post.post_date }}</p>
+                <h4 class="news-title mb-1">{{ post.post_title }}</h4>
+                <p>{{ post.post_exerpt }}</p>
+              </a>
+            </div>
+          </template>
+        </div>
       </div>
     </section>
 
     <section id="portfolio" class="portfolio section-bg">
-      <div class="container" data-aos="fade-up">
+      <div class="container">
         <div class="section-title">
           <h2>Portfolio</h2>
           <p>Explore my web development portfolio here</p>
         </div>
         <div class="row">
-          <div class="col-lg-12 d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
+          <div class="col-lg-12 d-flex justify-content-center">
             <ul id="portfolio-flters">
-              <li data-filter="*" class="filter-active">All</li>
-              <li data-filter=".filter-wordpress">WordPress</li>
-              <li data-filter=".filter-codeigniter">CodeIgniter</li>
-              <li data-filter=".filter-zend">Zend</li>
+              <li :class="{ 'filter-active': portfolioFilter === '*' }" @click.prevent="setFilter('*')">All</li>
+              <li :class="{ 'filter-active': portfolioFilter === 'wordpress' }" @click.prevent="setFilter('wordpress')">WordPress</li>
+              <li :class="{ 'filter-active': portfolioFilter === 'codeigniter' }" @click.prevent="setFilter('codeigniter')">CodeIgniter</li>
+              <li :class="{ 'filter-active': portfolioFilter === 'zend' }" @click.prevent="setFilter('zend')">Zend</li>
             </ul>
           </div>
         </div>
 
-        <div class="row portfolio-container" data-aos="fade-up" data-aos-delay="200">
-          <div class="col-lg-4 col-md-6 portfolio-item filter-wordpress">
+        <div class="row portfolio-container">
+          <div v-for="item in filteredPortfolio" :key="item.title" class="col-lg-4 col-md-6 portfolio-item" :class="`filter-${item.category}`">
             <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/wordpress/football_careers.png" class="img-fluid" alt="">
+              <img :src="item.image" class="img-fluid" :alt="item.title" />
               <div class="portfolio-info">
-                <h4>Football Careers</h4>
+                <h4>{{ item.title }}</h4>
                 <div class="portfolio-links">
-                  <a href="https://www.footballcareers.com/" target="_blank"><i class="bx bx-link"></i></a>
+                  <a :href="item.link" target="_blank"><i class="bx bx-link"></i></a>
                 </div>
               </div>
             </div>
           </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-zend">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/zend/what_games.png" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>What Games</h4>
-                <div class="portfolio-links">
-                  <a href="https://what.games/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-wordpress">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/wordpress/teleta.png" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Teleta</h4>
-                <p>Web</p>
-                <div class="portfolio-links">
-                  <a href="https://www.teleta.co.uk/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-wordpress">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/wordpress/blok_property.png" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Blok Property</h4>
-                <div class="portfolio-links">
-                  <a href="https://www.blokpropertymanagement.co.uk/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-wordpress">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/wordpress/cameron.png" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Cameron Intelectual Property</h4>
-                <div class="portfolio-links">
-                  <a href="https://cameronintellectualproperty.com/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-codeigniter">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/codeigniter/oxford_language.jpg" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Oxford Language Club</h4> 
-                <div class="portfolio-links">
-                  <a href="https://oxfordlanguageclub.com/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-wordpress">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/wordpress/scotchgalore.png" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Scotch Galore</h4>
-                <p>Web</p>
-                <div class="portfolio-links">
-                  <a href="https://scotchgalore.com/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-codeigniter">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/codeigniter/minion_rush.jpg" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Minion Rush</h4>
-                <p>Web</p>
-                <div class="portfolio-links">
-                  <a href="https://minionrush.com/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          
-          <div class="col-lg-4 col-md-6 portfolio-item filter-zend">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/zend/gameloft.jpeg" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Gameloft</h4>
-                <p>Web</p>
-                <div class="portfolio-links">
-                  <a href="https://gameloft.com/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-zend">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/zend/asphaltlegendsunite.jpeg" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Asphalt Legends</h4>
-                <p>Web</p>
-                <div class="portfolio-links">
-                  <a href="https://asphaltlegendsunite.com/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-zend">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/zend/dragonmanialegends.jpeg" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Dragon Mania Legends</h4>
-                <p>Web</p>
-                <div class="portfolio-links">
-                  <a href="https://dragonmanialegends.com/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-wordpress">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/wordpress/naxosmusicbox.jpeg" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Naxos Music Box</h4>
-                <p>Web</p>
-                <div class="portfolio-links">
-                  <a href="https://www.naxosmusicbox.com/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-wordpress">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/wordpress/naxosaudiobooks.jpeg" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Naxos Audiobooks</h4>
-                <p>Web</p>
-                <div class="portfolio-links">
-                  <a href="https://naxosaudiobooks.com/" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-zend">
-            <div class="portfolio-wrap">
-              <img src="assets/img/portfolio/zend/gameloft_in.png" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Gameloft IN</h4>
-                <p>Web</p>
-                <div class="portfolio-links">
-                  <a href="https://jhedmendoza.is-a.dev/projects/gameloft_in" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
     </section>
-
     <section id="contact" class="contact">
       <div class="container" data-aos="fade-up">
         <div class="section-title">
@@ -302,25 +144,25 @@
             </div>
           </div>
           <div class="col-lg-8 mt-5 mt-lg-0">
-            <form action="" method="post" role="form" class="php-email-form" id="contact-form">
+            <form @submit.prevent="submitContact" role="form" class="php-email-form" id="contact-form">
               <div class="form-row">
                 <div class="col-md-6 form-group">
-                  <input type="text" name="name" class="form-control" id="name" placeholder="Your Name" />
+                  <input type="text" v-model="contact.name" class="form-control" id="name" placeholder="Your Name" />
                 </div>
                 <div class="col-md-6 form-group">
-                  <input type="email" class="form-control" name="email" id="email" placeholder="Your Email" />
+                  <input type="email" v-model="contact.email" class="form-control" name="email" id="email" placeholder="Your Email" />
                 </div>
               </div>
               <div class="form-group">
-                <textarea id="message" class="form-control" name="message" rows="5" placeholder="Message"></textarea>
+                <textarea v-model="contact.message" id="message" class="form-control" name="message" rows="5" placeholder="Message"></textarea>
               </div>
-              <div class="mb-3">
-                <div class="sent-message">Your message has been sent. Thank you!</div>
+              <div class="mb-3" v-if="contactFeedback">
+                <div :class="contactStatus === 'error' ? 'text-danger' : 'text-success'">{{ contactFeedback }}</div>
               </div>
               <div>
-                <button class="btn send-btn" type="submit">
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none"></span>
-                  <span class="btn-msg">Send</span>
+                <button class="btn send-btn" type="submit" :disabled="contactStatus === 'sending'">
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-show="contactStatus === 'sending'"></span>
+                  <span class="btn-msg">{{ contactStatus === 'sending' ? 'Sending...' : 'Send' }}</span>
                 </button>
               </div>
             </form>
@@ -344,9 +186,13 @@
     </div>
   </footer>
 
-  <a href="#" class="back-to-top"><i class="bx bx-up-arrow-alt"></i></a>
+  <a href="#" class="back-to-top" v-show="showBackToTop" @click.prevent="scrollToSection('#hero')"><i class="bx bx-up-arrow-alt"></i></a>
+  </div>
 
   <div id="preloader"></div>
+
+  <div id="site-footer"></div>
+  <!-- footer partial injected into #site-footer -->
 
   <div class="modal fade" id="newsContentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newsContentModal" aria-hidden="true">
     <div class="modal-dialog">
@@ -368,29 +214,9 @@
     </div>
   </div>
 
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/jquery/jquery.min.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/jquery.easing/jquery.easing.min.js"></script>
-  <script src="assets/vendor/waypoints/jquery.waypoints.min.js"></script>
-  <script src="assets/vendor/counterup/counterup.min.js"></script>
-  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="assets/vendor/venobox/venobox.min.js"></script>
-  <script src="assets/vendor/owl.carousel/owl.carousel.min.js"></script>
-  <script src="assets/vendor/typed.js/typed.min.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/particlesjs/particles.min.js"></script>
-  <script src="assets/vendor/particlesjs/app.js"></script>
-
-  <!-- External JS -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
-  <!-- Template Main JS File -->
-  <script src="assets/js/main.js?v=1.2"></script>
-  <script src="assets/js/email.js?v=1.2"></script>
-  <script src="assets/js/news.js?v=1.2"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="assets/js/partials.js"></script>
+  <script src="assets/js/app.js"></script>
 </body>
 
 </html>

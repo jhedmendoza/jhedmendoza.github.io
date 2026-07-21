@@ -1,0 +1,16 @@
+<div>
+  <button type="button" class="mobile-nav-toggle d-xl-none" @click="toggleMobileNav">
+    <i :class="mobileNavActive ? 'icofont-close' : 'icofont-navigation-menu'"></i>
+  </button>
+
+  <header id="header" class="d-flex flex-column justify-content-center">
+    <nav class="nav-menu">
+      <ul>
+        <li :class="{ active: activeSection === 'hero' }"><a href="#hero" @click.prevent="scrollToSection('#hero')"><i class="bx bx-home"></i> <span>Home</span></a></li>
+        <li :class="{ active: activeSection === 'news' }"><a href="#news" @click.prevent="scrollToSection('#news')"><i class="bx bx-news"></i> <span>Blog</span></a></li>
+        <li :class="{ active: activeSection === 'portfolio' }"><a href="#portfolio" @click.prevent="scrollToSection('#portfolio')"><i class="bx bx-book-content"></i> <span>Portfolio</span></a></li>
+        <li :class="{ active: activeSection === 'contact' }"><a href="#contact" @click.prevent="scrollToSection('#contact')"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
+      </ul>
+    </nav>
+  </header>
+</div>
