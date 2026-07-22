@@ -1,84 +1,28 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jhedmendoza</title>
 
-        <title>Blog List</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&display=swap" rel="stylesheet">
 
-        <meta property="og:type" content="website" />
-        <meta property="og:url" name="url" content="" />
-        <meta property="og:title" name="title" content="Blog List" />
-        <meta property="og:description" name="description" content="" />
-        <meta property="og:image" name="image" content="" />
+    <!-- Vendor CSS (kept as-is) -->
+    <link href="%BASE_URL%assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/venobox/venobox.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/owl.carousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/aos/aos.css" rel="stylesheet">
 
-        <link rel="shortcut icon" href="favicon.png" type="image/xpng">
-       
-        <link href="assets/vendor/icofont/icofont.min.css" rel="stylesheet">
-        <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-        <!-- Google fonts-->
-        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
-        
-        <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="assets/css/post.css" rel="stylesheet" />
-        <link href="assets/css/style.css" rel="stylesheet" />
+    <!-- Template CSS -->
+    <link href="%BASE_URL%assets/css/style.css?v=1.2" rel="stylesheet">
+    <link href="%BASE_URL%assets/css/custom.css?v=1.2" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app"></div>
 
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-0NLZQXYM5H"></script>
-        <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-0NLZQXYM5H');
-        </script>
-
-    </head>
-    <body>
-        <div id="blog-app">
-            <!-- Navigation-->
-            <div id="site-header"></div>
-            <!-- header partial injected into #site-header -->
-            <!-- Page Header-->
-            <header class="masthead">
-                <div class="container position-relative px-4 px-lg-5">
-                    <div class="row gx-4 gx-lg-5 justify-content-center">
-                        <div class="col-md-10 col-lg-8 col-xl-7">
-                            <div class="post-heading">
-                                <h1>Blog List</h1>
-                                <span class="meta">Latest posts from my blog</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-            <div class="container px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-md-10 col-lg-8 col-xl-7 posts-contenter">
-                        <div v-if="isLoading" class="text-center">Loading posts...</div>
-                        <div v-else-if="error" class="text-center text-danger">{{ error }}</div>
-                        <div v-else>
-                            <div v-for="post in posts" :key="post.post_id" class="post-preview">
-                                <a :href="`post.html?slug=${post.slug}&postId=${post.post_id}`">
-                                    <h2 class="post-title">{{ post.title }}</h2>
-                                    <p style="margin-top:0" class="post-subtitle">{{ post.excerpt }}</p>
-                                </a>
-                                <p class="post-meta">Posted on <span class="date-posted">{{ post.date }}</span></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-        <script src="assets/js/partials.js"></script>
-        <script src="assets/js/blog-app.js"></script>
-        <script>
-          // wait until partials are loaded before mounting blog-app (blog-app listens to #blog-app mount)
-          document.addEventListener('partials:loaded', function(){
-            // nothing needed here; blog-app mounts on DOMContentLoaded
-          });
-        </script>
-    </body>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

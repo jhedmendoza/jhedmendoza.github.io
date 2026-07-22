@@ -22,7 +22,7 @@
             <div v-else-if="postsError" class="col-12 text-danger">{{ postsError }}</div>
             <div v-else>
               <div v-for="(post, i) in posts" :key="post.post_id" class="col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-                <a :href="`/post.html?slug=${post.post_slug}&postId=${post.post_id}`" :class="['icon-box','iconbox-'+colors[i % colors.length],'w-100','news-content']" :data-id="i" :data-color="hexColors[i % hexColors.length]">
+                <router-link :to="{ name: 'post', params: { postId: post.post_id, slug: post.post_slug } }" :class="['icon-box','iconbox-'+colors[i % colors.length],'w-100','news-content']" v-bind:data-id="i" v-bind:data-color="hexColors[i % hexColors.length]">
                   <div class="icon">
                     <svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
                       <path stroke="none" stroke-width="0" fill="#f5f5f5" :d="svg[i % svg.length]"></path>
@@ -32,7 +32,7 @@
                   <p class="news-date mb-0 float-right">{{ post.post_date }}</p>
                   <h4 class="news-title mb-1">{{ post.post_title }}</h4>
                   <p>{{ post.post_exerpt }}</p>
-                </a>
+                </router-link>
               </div>
             </div>
           </div>
@@ -69,7 +69,7 @@
           <div class="row mt-1">
             <div class="col-lg-4"> <div class="info"><div class="address"><i class="icofont-google-map"></i><h4>Location:</h4><p>Bacoor Cavite, 4102</p></div><div class="email"><i class="icofont-envelope"></i><h4>Email:</h4><p>jhed.adrine@gmail.com</p></div></div></div>
             <div class="col-lg-8 mt-5 mt-lg-0">
-              <form @submit.prevent="submitContact">
+              <form @submit.prevent="submitContact" class="php-email-form" id="contact-form">
                 <div class="form-row">
                   <div class="col-md-6 form-group"><input v-model="contact.name" type="text" class="form-control" placeholder="Your Name"/></div>
                   <div class="col-md-6 form-group"><input v-model="contact.email" type="email" class="form-control" placeholder="Your Email"/></div>

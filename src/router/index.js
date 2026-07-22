@@ -7,8 +7,10 @@ import Maintenance from '../pages/Maintenance.vue'
 
 const routes = [
   { path: '/', component: Home },
-  { path: '/posts', component: Posts },
-  { path: '/post', component: Post },
+  // posts: show the header but hide the footer and the left main navigation
+  { path: '/posts', component: Posts, meta: { hideFooter: true, hideMainNav: true } },
+  // individual post: hide both header and footer (legacy behaviour)
+  { path: '/post/:postId', name: 'post', component: Post, meta: { hideHeader: true, hideFooter: true } },
   { path: '/portfolio-details', component: PortfolioDetails },
   { path: '/maintenance', component: Maintenance }
 ]

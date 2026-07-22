@@ -1,11 +1,11 @@
 <template>
   <div>
-    <button type="button" class="mobile-nav-toggle d-xl-none" @click="toggleMobileNav">
+    <button v-if="showMainNav" type="button" class="mobile-nav-toggle d-xl-none" @click="toggleMobileNav">
       <i :class="mobileNavActive ? 'icofont-close' : 'icofont-navigation-menu'"></i>
     </button>
 
     <header id="header" class="d-flex flex-column justify-content-center">
-      <nav :class="['nav-menu', { 'mobile-active': mobileNavActive }]">
+      <nav v-if="showMainNav" :class="['nav-menu', { 'mobile-active': mobileNavActive }]">
         <ul>
           <li :class="{ active: activeSection === 'hero' }"><a href="#hero" @click.prevent="scrollToSection('#hero')"><i class="bx bx-home"></i> <span>Home</span></a></li>
           <li :class="{ active: activeSection === 'news' }"><a href="#news" @click.prevent="scrollToSection('#news')"><i class="bx bx-news"></i> <span>Blog</span></a></li>
@@ -20,6 +20,12 @@
 <script>
 export default {
   name: 'HeaderComp',
+  props: {
+    showMainNav: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
       mobileNavActive: false,
