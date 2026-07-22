@@ -12,11 +12,22 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data(){ return { post:null, isLoading:true, error:'' } },
   methods:{
     getPostId(){ return new URLSearchParams(window.location.search).get('postId') },
-    async fetchPost(id){ try{ const res=await fetch(`https://public-api.wordpress.com/rest/v1.1/sites/jhedmendoza.wordpress.com/posts/${id}`); const data=await res.json(); this.post={ title:data.title, content:data.content, date:new Date(data.date).toISOString().split('T')[0], featured_image:data.featured_image }; document.title=data.title }catch(e){ this.error='Unable to load this post.' } finally{ this.isLoading=false } }
+    async fetchPost(id){
+      try{
+        const res = await axios.get(`https://public-api.wordpress.com/rest/v1.1/sites/jhedmendoza.wordpress.com/posts/${id}`, { timeout: 8000 })
+        const data = res.data
+        this.post = { title: data.title, content: data.content, date: new Date(data.date).toISOString().split('T')[0], featured_image: data.featured_image }
+        document.title = data.title
+      } catch(e){
+        console.error('Post fetch error', e)
+        this.error='Unable to load this post.'
+      } finally{ this.isLoading=false }
+    }
   },
   mounted(){ const id=this.getPostId(); if(id) this.fetchPost(id); else this.error='No post specified.' }
 }
