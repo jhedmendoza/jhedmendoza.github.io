@@ -69,14 +69,18 @@
           <div class="row mt-1">
             <div class="col-lg-4"> <div class="info"><div class="address"><i class="icofont-google-map"></i><h4>Location:</h4><p>Bacoor Cavite, 4102</p></div><div class="email"><i class="icofont-envelope"></i><h4>Email:</h4><p>jhed.adrine@gmail.com</p></div></div></div>
             <div class="col-lg-8 mt-5 mt-lg-0">
-              <form @submit.prevent="submitContact" class="php-email-form" id="contact-form">
+              <form id="contact-form" class="php-email-form" @submit.prevent="submitContact" novalidate>
                 <div class="form-row">
-                  <div class="col-md-6 form-group"><input v-model="contact.name" type="text" class="form-control" placeholder="Your Name"/></div>
-                  <div class="col-md-6 form-group"><input v-model="contact.email" type="email" class="form-control" placeholder="Your Email"/></div>
+                  <div class="col-md-6 form-group"><input name="name" v-model="contact.name" type="text" class="form-control" placeholder="Your Name"/></div>
+                  <div class="col-md-6 form-group"><input name="email" v-model="contact.email" type="email" class="form-control" placeholder="Your Email"/></div>
                 </div>
-                <div class="form-group"><textarea v-model="contact.message" class="form-control" rows="5" placeholder="Message"></textarea></div>
-                <div class="mb-3" v-if="contactFeedback"><div :class="contactStatus === 'error' ? 'text-danger' : 'text-success'">{{ contactFeedback }}</div></div>
-                <div><button class="btn send-btn" :disabled="contactStatus==='sending'">{{ contactStatus==='sending' ? 'Sending...' : 'Send' }}</button></div>
+                <div class="form-group"><textarea name="message" v-model="contact.message" class="form-control" rows="5" placeholder="Message"></textarea></div>
+                <div class="mb-3" v-if="contactFeedback"><div    
+                 :class="[
+                    contactStatus === 'error' ? 'error-message' : 'sent-message',
+                    contactStatus == 'success' || contactStatus == 'error' ? 'show' : 'hide'
+                ]">{{ contactFeedback }}</div></div>
+                <div><button class="btn send-btn" :disabled="contactStatus === 'sending'">{{ contactStatus==='sending' ? 'Sending...' : 'Send' }}</button></div>
               </form>
             </div>
           </div>
@@ -221,22 +225,85 @@ export default {
 
 
     validateContact() {
-      const email = this.contact.email.trim(); const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!this.contact.name.trim()) return 'Please enter your name.'
-      if (!email) return 'Please enter your email.'
-      if (!emailRx.test(email)) return 'Please enter a valid email address.'
-      if (!this.contact.message.trim()) return 'Please write something for me.'
-      return ''
+      // Prefer jQuery Validate if available to replicate previous behavior (email.js)
+      const form = document.getElementById('contact-form')
+      if (window.$ && $.fn && $.fn.validate && form) {
+        // initialize validator once with rules/messages
+        if (!form.__validatorInitialized) {
+          $(form).validate({
+            rules: {
+              name: { required: true },
+              email: { required: true, email: true },
+              message: { required: true }
+            },
+            messages: {
+              name: 'Please enter your name.',
+              email: { required: 'Please enter your email.', email: 'Please enter a valid email address.' },
+              message: 'Please write something for me.'
+            },
+            errorElement: 'div',
+            errorClass: 'text-danger',
+            errorPlacement(error, element) {
+              // place error after the form control
+              error.insertAfter(element)
+            },
+            highlight(element) { $(element).addClass('is-invalid') },
+            unhighlight(element) { $(element).removeClass('is-invalid') }
+          })
+          form.__validatorInitialized = true
+        }
+        // return empty string if valid, otherwise first error message
+        const valid = $(form).valid()
+        if (valid) return ''
+        const firstError = form.querySelector('.text-danger')
+        return firstError ? firstError.textContent.trim() : 'Please fix the errors in the form.'
+      }
+
     },
     async submitContact() {
-      const v = this.validateContact(); if (v) { this.contactStatus='error'; this.contactFeedback=v; return }
-      this.contactStatus='sending'; this.contactFeedback='Sending...'
+      // Validate with jQuery Validate first if available
+      const form = document.getElementById('contact-form')
+      if (window.$ && $.fn && $.fn.validate && form) {
+        // ensure validator initialized (in case load/init ran earlier)
+        if (!form.__validatorInitialized) {
+          $(form).validate({
+            rules: { name: { required: true }, email: { required: true, email: true }, message: { required: true } },
+            messages: { name: 'Please enter your name.', email: { required: 'Please enter your email.', email: 'Please enter a valid email address.' }, message: 'Please write something for me.' },
+            errorElement: 'div', errorClass: 'text-danger', errorPlacement(error, element) { error.insertAfter(element) }, highlight(el) { $(el).addClass('is-invalid') }, unhighlight(el) { $(el).removeClass('is-invalid') }
+          })
+          form.__validatorInitialized = true
+        }
+
+        const valid = $(form).valid()
+        if (!valid) {
+          const firstError = form.querySelector('.text-danger')
+          this.contactStatus = 'pending'
+          this.contactFeedback = firstError ? firstError.textContent.trim() : 'Please fix the errors in the form.'
+          return
+        }
+      } else {
+        // fallback to existing manual validation
+        const v = this.validateContact(); if (v) { this.contactStatus='error'; this.contactFeedback=v; return }
+      }
+
+      this.contactStatus = 'sending'
+      this.contactFeedback = 'Sending...'
+
       try {
         const payload = { service_id: 'service_ioeych3', template_id: 'jm_xftqc27', user_id: 'rke7kU1n5NYJuQ_vk', template_params: { from_name: this.contact.name.trim(), from_email: this.contact.email.trim(), message: this.contact.message.trim() } }
+
         const r = await fetch('https://api.emailjs.com/api/v1.0/email/send', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+
         if (!r.ok) throw new Error('fail')
-        this.contactStatus='success'; this.contactFeedback='Your message has been sent. Thank you!'; this.contact = { name:'', email:'', message:'' }
-      } catch (e) { this.contactStatus='error'; this.contactFeedback='Something went wrong. Please try again later.' }
+
+        this.contactStatus = 'success'
+        this.contactFeedback = 'Your message has been sent. Thank you!'
+        this.contact = { name:'', email:'', message:'' }
+      }
+      catch (e) {
+        this.contactStatus = 'error'
+        this.contactFeedback = 'Something went wrong. Please try again later.'
+      }
     }
   },
   async mounted() {
@@ -269,9 +336,53 @@ export default {
         s2.onload = resolve; s2.onerror = reject; document.body.appendChild(s2);
       });
     } catch (e) {
-      // non-fatal — particles are decorative
-      // console.warn('Particles failed to load', e)
+      console.warn('Particles failed to load', e)
     }
+
+    // Ensure jQuery Validate plugin is available for contact form validation
+    (function(){
+      const loadScript = (src) => new Promise((resolve, reject) => { const s = document.createElement('script'); s.src = src; s.onload = resolve; s.onerror = reject; document.head.appendChild(s); })
+      const initValidator = async () => {
+        try {
+          // ensure jQuery exists; if not, load it
+          if (!window.$ && !window.jQuery) {
+            await loadScript('https://code.jquery.com/jquery-3.6.0.min.js')
+            window.$ = window.jQuery = window.jQuery || window.$
+          }
+
+          // load jquery.validate if missing
+          if (window.$ && (!$.fn || !$.fn.validate)) {
+            await loadScript('https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js')
+          }
+
+          const formEl = document.getElementById('contact-form')
+          if (window.$ && $.fn && $.fn.validate && formEl && !formEl.__validatorInitialized) {
+            $(formEl).validate({
+              rules: {
+                name: { required: true },
+                email: { required: true, email: true },
+                message: { required: true }
+              },
+              messages: {
+                name: 'Please enter your name.',
+                email: { required: 'Please enter your email.', email: 'Please enter a valid email address.' },
+                message: 'Please write something for me.'
+              },
+              errorElement: 'div',
+              errorClass: 'text-danger',
+              errorPlacement(error, element) { error.insertAfter(element) },
+              highlight(element) { $(element).addClass('is-invalid') },
+              unhighlight(element) { $(element).removeClass('is-invalid') }
+            })
+            formEl.__validatorInitialized = true
+          }
+        } catch (e) {
+          // ignore — fallback validation still works
+        }
+      }
+      if (document.readyState === 'complete') initValidator(); else window.addEventListener('load', initValidator, { once: true })
+    })()
+
 
     // helper: wait for images to load inside a container
     this._waitForImages = (container) => {

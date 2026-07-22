@@ -10,6 +10,7 @@ label.error {font-size:12px;color:red}
 .n-content {font-size:13px}
 .news-title {font-family: 'Poppins';color:#45505b}
 .news-date {margin-top:11px}
+.text-danger {font-size:13px;}
 
 #particles-js {
     width: 100%;

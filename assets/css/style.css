@@ -17,6 +17,10 @@ h5,
 h6 {
     font-family: Raleway, sans-serif;
 }
+
+.show {display:block !important;}
+.hide {display:none !important;}
+
 .back-to-top {
     position: fixed;
     display: none;
@@ -788,7 +792,7 @@ section {
 .contact .php-email-form .error-message {
     display: none;
     color: #fff;
-    background: #ed3c0d;
+    background: #F44336;
     text-align: left;
     padding: 15px;
     font-weight: 600;
@@ -804,6 +808,7 @@ section {
     padding: 15px;
     font-weight: 600;
 }
+
 .contact .php-email-form .loading {
     display: none;
     background: #fff;
