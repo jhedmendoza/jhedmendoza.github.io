@@ -1,222 +1,28 @@
-<!DOCTYPE html> 
+﻿<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jhedmendoza</title>
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i&display=swap" rel="stylesheet">
 
-  <title>jhedmendoza</title>
+    <!-- Vendor CSS (kept as-is) -->
+    <link href="%BASE_URL%assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/icofont/icofont.min.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/venobox/venobox.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/owl.carousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="%BASE_URL%assets/vendor/aos/aos.css" rel="stylesheet">
 
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://jhedmendoza.is-a.dev/" />
-  <meta property="og:title" content="jhedmendoza" />
-  <meta property="og:description" content="I have been working as a web developer since 2011, specializing in backend development. My experience ranges from building WordPress themes and plugins to developing custom web applications and integrating third-party APIs using PHP frameworks such as CodeIgniter, Laravel, and Zend." />
-  <meta property="og:image" content="https://avatars.githubusercontent.com/u/26216425?v=4" />
+    <!-- Template CSS -->
+    <link href="%BASE_URL%assets/css/style.css?v=1.2" rel="stylesheet">
+    <link href="%BASE_URL%assets/css/custom.css?v=1.2" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app"></div>
 
-  <link rel="shortcut icon" href="favicon.png" type="image/xpng">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/icofont/icofont.min.css" rel="stylesheet">
-  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="assets/vendor/venobox/venobox.css" rel="stylesheet">
-  <link href="assets/vendor/owl.carousel/assets/owl.carousel.min.css" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-
-  <!-- Template Main CSS File -->
-  <link href="assets/css/style.css?v=1.2" rel="stylesheet">
-  <link href="assets/css/custom.css?v=1.2" rel="stylesheet">
-
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-0NLZQXYM5H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-0NLZQXYM5H');
-</script>
-
-</head>
-
-<body>
-  <div id="app">
-    <div id="site-header"></div>
-    <!-- header partial injected into #site-header -->
-
-    <section id="hero" class="d-flex flex-column justify-content-center">
-      <div class="container">
-        <h1>Jhed Mendoza</h1>
-        <p>I'm <span class="typed">{{ typedText }}</span></p>
-        <div class="social-links">
-          <a href="https://twitter.com/_jhedm" target="_blank" class="twitter"><i class="bx bxl-twitter"></i></a>
-          <a href="https://www.instagram.com/jhedmendoza/" target="_blank" class="instagram"><i class="bx bxl-instagram"></i></a>
-          <a href="https://www.linkedin.com/in/jhedmendoza/" target="_blank" class="linkedin"><i class="bx bxl-linkedin"></i></a>
-        </div>
-      </div>
-    </section>
-
-  <main id="main">
-
-    <section id="news" class="services">
-      <div class="container">
-        <div class="section-title">
-          <h2>Blog</h2>
-        </div>
-        <div class="row news-container">
-          <template v-if="isLoadingPosts">
-            <div class="col-12 text-center">Loading latest posts...</div>
-          </template>
-          <template v-else-if="postsError">
-            <div class="col-12 text-center text-danger">{{ postsError }}</div>
-          </template>
-          <template v-else>
-            <div v-for="post in posts" :key="post.post_id" class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-              <a :href="`post.html?slug=${post.post_slug}&postId=${post.post_id}`" class="icon-box iconbox-blue w-100 news-content">
-                <div class="icon">
-                  <svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke="none" stroke-width="0" fill="#f5f5f5" d="M300,521.0016835830174C376.1290562159157,517.8887921683347,466.0731472004068,529.7835943286574,510.70327084640275,468.03025145048787C554.3714126377745,407.6079735673963,508.03601936045806,328.9844924480964,491.2728898941984,256.3432110539036C474.5976632858925,184.082847569629,479.9380746630129,96.60480741107993,416.23090153303,58.64404602377083C348.86323505073057,18.502131276798302,261.93793281208167,40.57373210992963,193.5410806939664,78.93577620505333C130.42746243093433,114.334589627462,98.30271207620316,179.96522072025542,76.75703585869454,249.04625023123273C51.97151888228291,328.5150500222984,13.704378332031375,421.85034740162234,66.52175969318436,486.19268352777647C119.04800174914682,550.1803526380478,217.28368757567262,524.383925680826,300,521.0016835830174"/>
-                  </svg>
-                  <i class="bx bx-file"></i>
-                </div>
-                <p class="news-date mb-0 float-right">{{ post.post_date }}</p>
-                <h4 class="news-title mb-1">{{ post.post_title }}</h4>
-                <p>{{ post.post_exerpt }}</p>
-              </a>
-            </div>
-          </template>
-        </div>
-      </div>
-    </section>
-
-    <section id="portfolio" class="portfolio section-bg">
-      <div class="container">
-        <div class="section-title">
-          <h2>Portfolio</h2>
-          <p>Explore my web development portfolio here</p>
-        </div>
-        <div class="row">
-          <div class="col-lg-12 d-flex justify-content-center">
-            <ul id="portfolio-flters">
-              <li :class="{ 'filter-active': portfolioFilter === '*' }" @click.prevent="setFilter('*')">All</li>
-              <li :class="{ 'filter-active': portfolioFilter === 'wordpress' }" @click.prevent="setFilter('wordpress')">WordPress</li>
-              <li :class="{ 'filter-active': portfolioFilter === 'codeigniter' }" @click.prevent="setFilter('codeigniter')">CodeIgniter</li>
-              <li :class="{ 'filter-active': portfolioFilter === 'zend' }" @click.prevent="setFilter('zend')">Zend</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="row portfolio-container">
-          <div v-for="item in filteredPortfolio" :key="item.title" class="col-lg-4 col-md-6 portfolio-item" :class="`filter-${item.category}`">
-            <div class="portfolio-wrap">
-              <img :src="item.image" class="img-fluid" :alt="item.title" />
-              <div class="portfolio-info">
-                <h4>{{ item.title }}</h4>
-                <div class="portfolio-links">
-                  <a :href="item.link" target="_blank"><i class="bx bx-link"></i></a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <section id="contact" class="contact">
-      <div class="container" data-aos="fade-up">
-        <div class="section-title">
-          <h2>Send me a message</h2>
-        </div>
-        <div class="row mt-1">
-          <div class="col-lg-4">
-            <div class="info">
-              <div class="address">
-                <i class="icofont-google-map"></i>
-                <h4>Location:</h4>
-                <p>Bacoor Cavite, 4102</p>
-              </div>
-              <div class="email">
-                <i class="icofont-envelope"></i>
-                <h4>Email:</h4>
-                <p>jhed.adrine@gmail.com</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-8 mt-5 mt-lg-0">
-            <form @submit.prevent="submitContact" role="form" class="php-email-form" id="contact-form">
-              <div class="form-row">
-                <div class="col-md-6 form-group">
-                  <input type="text" v-model="contact.name" class="form-control" id="name" placeholder="Your Name" />
-                </div>
-                <div class="col-md-6 form-group">
-                  <input type="email" v-model="contact.email" class="form-control" name="email" id="email" placeholder="Your Email" />
-                </div>
-              </div>
-              <div class="form-group">
-                <textarea v-model="contact.message" id="message" class="form-control" name="message" rows="5" placeholder="Message"></textarea>
-              </div>
-              <div class="mb-3" v-if="contactFeedback">
-                <div :class="contactStatus === 'error' ? 'text-danger' : 'text-success'">{{ contactFeedback }}</div>
-              </div>
-              <div>
-                <button class="btn send-btn" type="submit" :disabled="contactStatus === 'sending'">
-                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-show="contactStatus === 'sending'"></span>
-                  <span class="btn-msg">{{ contactStatus === 'sending' ? 'Sending...' : 'Send' }}</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer id="footer">
-    <div class="container">
-      <div class="social-links">
-        <a href="https://www.linkedin.com/in/jhedmendoza/" class="linkedin" target="_blank"><i class="bx bxl-linkedin"></i></a>
-        <a href="https://github.com/jhedmendoza" class="github" target="_blank"><i class="bx bxl-github"></i></a>
-        <a href="https://twitter.com/_jhedm" target="_blank" class="twitter"><i class="bx bxl-twitter"></i></a>
-        <a href="https://www.instagram.com/jhedmendoza/" class="instagram" target="_blank"><i class="bx bxl-instagram"></i></a>
-      </div>
-      <div class="copyright">
-        &copy; Copyright <strong><span>jhedmendoza</span></strong>. All Rights Reserved
-      </div>
-    </div>
-  </footer>
-
-  <a href="#" class="back-to-top" v-show="showBackToTop" @click.prevent="scrollToSection('#hero')"><i class="bx bx-up-arrow-alt"></i></a>
-  </div>
-
-  <div id="preloader"></div>
-
-  <div id="site-footer"></div>
-  <!-- footer partial injected into #site-footer -->
-
-  <div class="modal fade" id="newsContentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="newsContentModal" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="post-info">
-            <p class="modal-date float-right"></p>
-          </div>
-          <div class="clearfix"></div>
-          <div class="n-content"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
-  <script src="assets/js/partials.js"></script>
-  <script src="assets/js/app.js"></script>
-</body>
-
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
