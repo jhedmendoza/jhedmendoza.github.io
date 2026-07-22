@@ -24,9 +24,9 @@
 </template>
 
 <script>
-const img1 = new URL('../../assets/img/portfolio/portfolio-details-1.jpg', import.meta.url).href;
-const img2 = new URL('../../assets/img/portfolio/portfolio-details-2.jpg', import.meta.url).href;
-const img3 = new URL('../../assets/img/portfolio/portfolio-details-3.jpg', import.meta.url).href;
+const img1 = '/assets/img/portfolio/portfolio-details-1.jpg';
+const img2 = '/assets/img/portfolio/portfolio-details-2.jpg';
+const img3 = '/assets/img/portfolio/portfolio-details-3.jpg';
 
 export default {
   name: 'PortfolioDetails',

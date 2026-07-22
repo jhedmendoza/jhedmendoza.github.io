@@ -27,85 +27,85 @@ createApp({
           title: "Football Careers",
           category: "wordpress",
           link: "https://www.footballcareers.com/",
-          image: "assets/img/portfolio/wordpress/football_careers.png"
+          image: "/assets/img/portfolio/wordpress/football_careers.png"
         },
         {
           title: "What Games",
           category: "zend",
           link: "https://what.games/",
-          image: "assets/img/portfolio/zend/what_games.png"
+          image: "/assets/img/portfolio/zend/what_games.png"
         },
         {
           title: "Teleta",
           category: "wordpress",
           link: "https://www.teleta.co.uk/",
-          image: "assets/img/portfolio/wordpress/teleta.png"
+          image: "/assets/img/portfolio/wordpress/teleta.png"
         },
         {
           title: "Blok Property",
           category: "wordpress",
           link: "https://www.blokpropertymanagement.co.uk/",
-          image: "assets/img/portfolio/wordpress/blok_property.png"
+          image: "/assets/img/portfolio/wordpress/blok_property.png"
         },
         {
           title: "Cameron Intellectual Property",
           category: "wordpress",
           link: "https://cameronintellectualproperty.com/",
-          image: "assets/img/portfolio/wordpress/cameron.png"
+          image: "/assets/img/portfolio/wordpress/cameron.png"
         },
         {
           title: "Oxford Language Club",
           category: "codeigniter",
           link: "https://oxfordlanguageclub.com/",
-          image: "assets/img/portfolio/codeigniter/oxford_language.jpg"
+          image: "/assets/img/portfolio/codeigniter/oxford_language.jpg"
         },
         {
           title: "Scotch Galore",
           category: "wordpress",
           link: "https://scotchgalore.com/",
-          image: "assets/img/portfolio/wordpress/scotchgalore.png"
+          image: "/assets/img/portfolio/wordpress/scotchgalore.png"
         },
         {
           title: "Minion Rush",
           category: "codeigniter",
           link: "https://minionrush.com/",
-          image: "assets/img/portfolio/codeigniter/minion_rush.jpg"
+          image: "/assets/img/portfolio/codeigniter/minion_rush.jpg"
         },
         {
           title: "Gameloft",
           category: "zend",
           link: "https://gameloft.com/",
-          image: "assets/img/portfolio/zend/gameloft.jpeg"
+          image: "/assets/img/portfolio/zend/gameloft.jpeg"
         },
         {
           title: "Asphalt Legends",
           category: "zend",
           link: "https://asphaltlegendsunite.com/",
-          image: "assets/img/portfolio/zend/asphaltlegendsunite.jpeg"
+          image: "/assets/img/portfolio/zend/asphaltlegendsunite.jpeg"
         },
         {
           title: "Dragon Mania Legends",
           category: "zend",
           link: "https://dragonmanialegends.com/",
-          image: "assets/img/portfolio/zend/dragonmanialegends.jpeg"
+          image: "/assets/img/portfolio/zend/dragonmanialegends.jpeg"
         },
         {
           title: "Naxos Music Box",
           category: "wordpress",
           link: "https://www.naxosmusicbox.com/",
-          image: "assets/img/portfolio/wordpress/naxosmusicbox.jpeg"
+          image: "/assets/img/portfolio/wordpress/naxosmusicbox.jpeg"
         },
         {
           title: "Naxos Audiobooks",
           category: "wordpress",
           link: "https://naxosaudiobooks.com/",
-          image: "assets/img/portfolio/wordpress/naxosaudiobooks.jpeg"
+          image: "/assets/img/portfolio/wordpress/naxosaudiobooks.jpeg"
         },
         {
           title: "Gameloft IN",
           category: "zend",
           link: "https://jhedmendoza.is-a.dev/projects/gameloft_in",
-          image: "assets/img/portfolio/zend/gameloft_in.png"
+          image: "/assets/img/portfolio/zend/gameloft_in.png"
         }
       ]
     };
