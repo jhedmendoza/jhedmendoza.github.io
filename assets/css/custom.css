@@ -30,3 +30,21 @@ canvas {
     display: block;
     vertical-align: bottom;
 }
+
+/* Typed cursor styling */
+.typed-cursor {
+    display: inline-block;
+    margin-left: 4px;
+    color: #0563bb;
+    font-weight: 400; /* thinner */
+    font-size: 0.9em; /* slightly smaller */
+    line-height: 1;
+    transform: translateY(-1px);
+    opacity: 0.95;
+    animation: typedBlink 1s steps(1, start) infinite;
+}
+@keyframes typedBlink {
+    0% { opacity: 1 }
+    50% { opacity: 0 }
+    100% { opacity: 1 }
+}
