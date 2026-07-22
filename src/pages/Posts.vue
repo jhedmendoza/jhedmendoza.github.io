@@ -73,10 +73,9 @@ export default {
       } finally{ this.isLoading=false }
     }
   },
-  async mounted(){
-    // dynamically inject post.css for this route so it can be removed on unmount
-    const base = import.meta.env.BASE_URL || '/'
-    this._postCssLink = this.ensureLink(base + 'assets/css/post.css', 'posts')
+  async mounted() {
+    this._postCssLink = this.ensureLink('/assets/css/post.css', 'posts')
+
     await this.fetchPosts()
   },
   beforeUnmount(){

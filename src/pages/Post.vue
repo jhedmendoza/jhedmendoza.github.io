@@ -108,41 +108,47 @@ export default {
           if (el) el.parentNode.removeChild(el)
         } 
   },
-  async mounted(){
-    // ensure the head contains the same assets the original post.html expected
-    // (fonts, icon fonts, vendor css). Use import.meta.env.BASE_URL to construct local paths.
-    const base = import.meta.env.BASE_URL || '/'
-    // external google fonts (kept as in original)
-    this.ensureLink('https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic', 'stylesheet')
-    this.ensureLink('https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800', 'stylesheet')
-    // vendor css (icofont, boxicons)
-    this.ensureLink(base + 'assets/vendor/icofont/icofont.min.css')
-    this.ensureLink(base + 'assets/vendor/boxicons/css/boxicons.min.css')
-    // core styles (style.css is already in index.html but ensure presence)
-    this.ensureLink(base + 'assets/css/style.css')
-    // inject post.css for this route and keep a reference so it can be removed on unmount
-    this._postCssLink = this.ensureLink(base + 'assets/css/post.css', 'post')
+async mounted() {
+  this.ensureLink(
+    'https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic',
+    'stylesheet'
+  )
+  this.ensureLink(
+    'https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800',
+    'stylesheet'
+  )
 
-    // Google Analytics snippet - ensure the gtag script is present (it may also be included in index.html)
-    this.ensureScript('https://www.googletagmanager.com/gtag/js?id=G-0NLZQXYM5H', { async: true })
-    // inject small config snippet only if gtag not yet configured
-    if (!window.gtag){
-      window.dataLayer = window.dataLayer || []
-      window.gtag = function(){ window.dataLayer.push(arguments) }
-      window.gtag('js', new Date())
-      window.gtag('config', 'G-0NLZQXYM5H')
-    }
+  this.ensureLink('/assets/vendor/icofont/icofont.min.css')
+  this.ensureLink('/assets/vendor/boxicons/css/boxicons.min.css')
+  this.ensureLink('/assets/css/style.css')
 
-    // prefer route param (SPA) but fall back to legacy query param
-    const idFromRoute = this.$route && this.$route.params && this.$route.params.postId
-    const id = idFromRoute || this.getPostId()
-    if (id) {
-      await this.fetchPost(id)
-    } else {
-      this.error = 'No post specified.'
-      this.isLoading = false
+  this._postCssLink = this.ensureLink('/assets/css/post.css', 'post')
+
+
+  this.ensureScript('https://www.googletagmanager.com/gtag/js?id=G-0NLZQXYM5H', {
+    async: true
+  })
+
+  if (!window.gtag) {
+    window.dataLayer = window.dataLayer || []
+    window.gtag = function () {
+      window.dataLayer.push(arguments)
     }
-  },
+    window.gtag('js', new Date())
+    window.gtag('config', 'G-0NLZQXYM5H')
+  }
+
+  // Prefer route param (SPA) but fall back to legacy query param
+  const idFromRoute = this.$route?.params?.postId
+  const id = idFromRoute || this.getPostId()
+
+  if (id) {
+    await this.fetchPost(id)
+  } else {
+    this.error = 'No post specified.'
+    this.isLoading = false
+  }
+},
   beforeUnmount(){
     // remove injected stylesheet to avoid leaking styles to other pages
     try{ this.removeInjectedLink && this.removeInjectedLink('post') } catch(e){}
