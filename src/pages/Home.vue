@@ -136,11 +136,23 @@ export default {
     },
     async setFilter(f) {
       this.portfolioFilter = f
-      // apply isotope filter if available
+      // apply isotope filter if available, but wait for images to be loaded to avoid collapsed heights
       try {
         if (this._iso) {
           const filterVal = f === '*' ? '*' : '.' + f
-          this._iso.arrange({ filter: filterVal })
+          const container = document.querySelector('.portfolio-container')
+          if (window.imagesLoaded && container) {
+            window.imagesLoaded(container, () => {
+              try { this._iso.reloadItems() } catch(e){}
+              this._iso.arrange({ filter: filterVal })
+              this._iso.layout()
+            })
+          } else {
+            await this._waitForImages(container)
+            try { this._iso.reloadItems() } catch(e){}
+            this._iso.arrange({ filter: filterVal })
+            this._iso.layout()
+          }
         }
       } catch (e) {
         console.warn('Isotope arrange failed', e)
@@ -273,6 +285,28 @@ export default {
       // console.warn('Particles failed to load', e)
     }
 
+    // helper: wait for images to load inside a container
+    this._waitForImages = (container) => {
+      return new Promise((resolve) => {
+        if (!container) return resolve()
+        const imgs = Array.from(container.querySelectorAll('img'))
+        if (!imgs.length) return resolve()
+        let loaded = 0
+        const check = () => {
+          loaded++
+          if (loaded >= imgs.length) resolve()
+        }
+        imgs.forEach((img) => {
+          if (img.complete && img.naturalHeight !== 0) return check()
+          const onLoad = () => { img.removeEventListener('load', onLoad); img.removeEventListener('error', onLoad); check() }
+          img.addEventListener('load', onLoad)
+          img.addEventListener('error', onLoad)
+          // safety timeout per image
+          setTimeout(onLoad, 3000)
+        })
+      })
+    }
+
     // Initialize Isotope for portfolio filtering/layout
     try {
       const base = import.meta.env.BASE_URL || '/'
@@ -283,15 +317,48 @@ export default {
           s.onload = resolve; s.onerror = reject; document.body.appendChild(s)
         })
       }
-      // give browser a tick to render portfolio items
-      await new Promise(r => setTimeout(r, 50))
-      const container = document.querySelector('.portfolio-container')
-      if (container && window.Isotope) {
-        this._iso = new window.Isotope(container, { itemSelector: '.portfolio-item' })
-        // apply initial filter
-        const initialFilter = this.portfolioFilter === '*' ? '*' : '.' + this.portfolioFilter
-        this._iso.arrange({ filter: initialFilter })
+      // load imagesLoaded from CDN if available for robust layout handling
+      if (!window.imagesLoaded) {
+        try {
+          await new Promise((resolve, reject) => {
+            const s = document.createElement('script')
+            s.src = 'https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js'
+            s.onload = resolve; s.onerror = reject; document.body.appendChild(s)
+          })
+        } catch (e) {
+          // ignore - we'll fall back to manual waiting
+        }
       }
+
+      const container = document.querySelector('.portfolio-container')
+      // wait for images to load before initializing
+      if (window.imagesLoaded && container) {
+        await new Promise((resolve) => window.imagesLoaded(container, resolve))
+      } else {
+        await this._waitForImages(container)
+      }
+
+      if (container && window.Isotope) {
+              this._iso = new window.Isotope(container, {
+                itemSelector: '.portfolio-item',
+                layoutMode: 'masonry',
+                percentPosition: true,
+                masonry: { columnWidth: '.portfolio-item' },
+                transitionDuration: '0.45s',
+                stagger: 40,
+                visibleStyle: { opacity: 1, transform: 'translateY(0)' },
+                hiddenStyle: { opacity: 0, transform: 'translateY(20px)' }
+              })
+              // apply initial filter
+              const initialFilter = this.portfolioFilter === '*' ? '*' : '.' + this.portfolioFilter
+              // use imagesLoaded to ensure layout after arrange
+              const doArrange = () => {
+                try { this._iso.reloadItems() } catch(e){}
+                this._iso.arrange({ filter: initialFilter })
+                this._iso.layout()
+              }
+              if (window.imagesLoaded) window.imagesLoaded(container, doArrange); else doArrange()
+            }
     } catch (err) {
       console.warn('Isotope init failed', err)
     }
