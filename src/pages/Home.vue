@@ -20,8 +20,7 @@
           <div class="row news-container">
             <div v-if="isLoadingPosts" class="col-12 text-center">Loading latest posts...</div>
             <div v-else-if="postsError" class="col-12 text-danger">{{ postsError }}</div>
-            <div v-else>
-              <div v-for="(post, i) in posts" :key="post.post_id" class="col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+              <div v-else v-for="(post, i) in posts" :key="post.post_id" class="col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
                 <router-link :to="{ name: 'post', params: { postId: post.post_id, slug: post.post_slug } }" :class="['icon-box','iconbox-'+colors[i % colors.length],'w-100','news-content']" v-bind:data-id="i" v-bind:data-color="hexColors[i % hexColors.length]">
                   <div class="icon">
                     <svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
@@ -34,7 +33,7 @@
                   <p>{{ post.post_exerpt }}</p>
                 </router-link>
               </div>
-            </div>
+       
           </div>
         </div>
       </section>
