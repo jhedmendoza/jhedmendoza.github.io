@@ -6,8 +6,8 @@
         <h1>Jhed Mendoza</h1>
         <p>I'm <span class="typed">{{ typedText }}</span><span class="typed-cursor">|</span></p>
         <div class="social-links">
-          <a href="https://twitter.com/_jhedm" target="_blank" class="twitter"><i class="bx bxl-twitter"></i></a>
           <a href="https://www.instagram.com/jhedmendoza/" target="_blank" class="instagram"><i class="bx bxl-instagram"></i></a>
+          <a href="https://github.com/jhedmendoza" target="_blank" class="github"><i class="bx bxl-github"></i></a>
           <a href="https://www.linkedin.com/in/jhedmendoza/" target="_blank" class="linkedin"><i class="bx bxl-linkedin"></i></a>
         </div>
       </div>
