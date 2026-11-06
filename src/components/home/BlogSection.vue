@@ -13,7 +13,6 @@
                  :aria-hidden="!isVisible(i)">
               <router-link :to="{ name: 'post', params: { postId: post.post_id, slug: post.post_slug } }"
                            :tabindex="isVisible(i) ? 0 : -1" class="blog-card">
-                <span class="blog-card-index">{{ String(i + 1).padStart(2, '0') }}</span>
                 <p class="blog-card-meta">
                   <time :datetime="post.post_date">{{ post.post_date_label }}</time>
                   <template v-if="post.read_time"> · {{ post.read_time }} min read</template>
@@ -187,14 +186,6 @@ export default {
 .blog-card:focus-visible::before { transform: scaleX(1); }
 .blog-card:focus-visible { outline: 2px solid var(--blog-accent); outline-offset: 6px; }
 
-.blog-card-index {
-  font-family: Poppins, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  color: var(--blog-accent);
-  margin-bottom: 14px;
-}
 .blog-card-meta {
   font-size: 12px;
   letter-spacing: 0.06em;

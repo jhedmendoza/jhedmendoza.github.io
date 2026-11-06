@@ -35,6 +35,7 @@ export default {
       activeSection: '',
       navItems: [
         { id: 'hero', label: 'Home', icon: 'bx-home-alt' },
+        { id: 'stack', label: 'Tech Stack', icon: 'bx-layer' },
         { id: 'news', label: 'Blog', icon: 'bx-book-open' },
         { id: 'portfolio', label: 'Portfolio', icon: 'bx-briefcase-alt-2' },
         { id: 'contact', label: 'Contact', icon: 'bx-envelope' }
@@ -63,7 +64,7 @@ export default {
     }
   },
   mounted() {
-    const sections = ['hero', 'news', 'portfolio', 'contact']
+    const sections = ['hero', 'stack', 'news', 'portfolio', 'contact']
     // keep a reference so we can remove it in beforeUnmount (Vue 3 doesn't have $once)
     this._headerOnScroll = () => {
       for (const s of sections) {
@@ -122,6 +123,8 @@ export default {
 #header .site-nav a:focus-visible .bx-book-open { animation: navPageTurn 0.6s ease; }
 #header .site-nav a:hover .bx-briefcase-alt-2,
 #header .site-nav a:focus-visible .bx-briefcase-alt-2 { animation: navWiggle 0.6s ease; }
+#header .site-nav a:hover .bx-layer,
+#header .site-nav a:focus-visible .bx-layer { animation: navStack 0.6s ease; }
 #header .site-nav a:hover .bx-envelope,
 #header .site-nav a:focus-visible .bx-envelope { animation: navSend 0.6s ease; }
 
@@ -142,6 +145,11 @@ export default {
   40%      { transform: rotate(10deg); }
   60%      { transform: rotate(-6deg); }
   80%      { transform: rotate(3deg); }
+}
+@keyframes navStack {
+  0%, 100% { transform: scaleY(1) translateY(0); }
+  30%      { transform: scaleY(0.8) translateY(2px); }
+  60%      { transform: scaleY(1.12) translateY(-3px); }
 }
 @keyframes navSend {
   0%   { transform: translate(0, 0) rotate(0); }

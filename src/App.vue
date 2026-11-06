@@ -5,6 +5,7 @@
       <router-view />
     </main>
     <FooterComp v-if="showFooter" />
+    <CursorInk />
     <CursorDot />
   </div>
 </template>
@@ -13,9 +14,10 @@
 import HeaderComp from './components/Header.vue'
 import FooterComp from './components/Footer.vue'
 import CursorDot from './components/CursorDot.vue'
+import CursorInk from './components/CursorInk.vue'
 
 export default {
-  components: { HeaderComp, FooterComp, CursorDot },
+  components: { HeaderComp, FooterComp, CursorDot, CursorInk },
   computed: {
     showHeader() {
       return !(this.$route && this.$route.matched && this.$route.matched.some(r => r.meta && r.meta.hideHeader))
