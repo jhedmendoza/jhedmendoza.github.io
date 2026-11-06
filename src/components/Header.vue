@@ -1,8 +1,9 @@
 <template>
   <div>
-    <button v-if="showMainNav" type="button" class="mobile-nav-toggle d-lg-none" :aria-expanded="mobileNavActive"
-            :aria-label="mobileNavActive ? 'Close menu' : 'Open menu'" @click="toggleMobileNav">
-      <i :class="['bx', mobileNavActive ? 'bx-x' : 'bx-menu']"></i>
+    <button v-if="showMainNav" type="button" :class="['mobile-nav-toggle', 'd-lg-none', { 'is-open': mobileNavActive }]"
+            :aria-expanded="mobileNavActive" :aria-label="mobileNavActive ? 'Close menu' : 'Open menu'" @click="toggleMobileNav">
+      <!-- three bars that morph into an X (and back) -->
+      <span class="burger" aria-hidden="true"><span></span><span></span><span></span></span>
     </button>
 
     <header id="header" class="d-flex flex-column justify-content-center">
@@ -35,8 +36,9 @@ export default {
       activeSection: '',
       navItems: [
         { id: 'hero', label: 'Home', icon: 'bx-home-alt' },
+        { id: 'experience', label: 'Experience', icon: 'bx-briefcase-alt-2' },
         { id: 'stack', label: 'Tech Stack', icon: 'bx-layer' },
-        { id: 'portfolio', label: 'Portfolio', icon: 'bx-briefcase-alt-2' },
+        { id: 'portfolio', label: 'Portfolio', icon: 'bx-grid-alt' },
         { id: 'news', label: 'Blog', icon: 'bx-book-open' },
         { id: 'contact', label: 'Contact', icon: 'bx-envelope' }
       ]
@@ -64,7 +66,7 @@ export default {
     }
   },
   mounted() {
-    const sections = ['hero', 'stack', 'portfolio', 'news', 'contact']
+    const sections = ['hero', 'experience', 'stack', 'portfolio', 'news', 'contact']
     // keep a reference so we can remove it in beforeUnmount (Vue 3 doesn't have $once)
     this._headerOnScroll = () => {
       for (const s of sections) {
@@ -125,6 +127,8 @@ export default {
 #header .site-nav a:focus-visible .bx-briefcase-alt-2 { animation: navWiggle 0.6s ease; }
 #header .site-nav a:hover .bx-layer,
 #header .site-nav a:focus-visible .bx-layer { animation: navStack 0.6s ease; }
+#header .site-nav a:hover .bx-grid-alt,
+#header .site-nav a:focus-visible .bx-grid-alt { animation: navGrid 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
 #header .site-nav a:hover .bx-envelope,
 #header .site-nav a:focus-visible .bx-envelope { animation: navSend 0.6s ease; }
 
@@ -150,6 +154,11 @@ export default {
   0%, 100% { transform: scaleY(1) translateY(0); }
   30%      { transform: scaleY(0.8) translateY(2px); }
   60%      { transform: scaleY(1.12) translateY(-3px); }
+}
+@keyframes navGrid {
+  0%   { transform: rotate(0) scale(1); }
+  50%  { transform: rotate(90deg) scale(0.85); }
+  100% { transform: rotate(90deg) scale(1); }
 }
 @keyframes navSend {
   0%   { transform: translate(0, 0) rotate(0); }
@@ -229,10 +238,67 @@ export default {
   #header .site-nav a:hover span { color: var(--nav-accent); }
 }
 
-/* hamburger button */
-.mobile-nav-toggle i { font-size: 28px; color: var(--c-text); transition: color 0.25s ease; }
-.mobile-nav-toggle:hover i,
-.mobile-nav-active .mobile-nav-toggle i { color: var(--c-accent); }
+/* hamburger button: bars morph into an X when open, and back when closed */
+.mobile-nav-toggle {
+  top: 16px;
+  right: 15px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.burger {
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 16px;
+}
+.burger span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--c-text);
+  transition: top 0.25s ease 0.2s, transform 0.3s cubic-bezier(0.65, 0, 0.35, 1) 0s,
+              opacity 0.2s ease 0.15s, background-color 0.25s ease;
+}
+.burger span:nth-child(1) { top: 0; }
+.burger span:nth-child(2) { top: 7px; }
+.burger span:nth-child(3) { top: 14px; }
+.mobile-nav-toggle:hover .burger span { background: var(--c-accent); }
+/* open: outer bars slide to the middle, then rotate into an X; the middle bar shrinks away */
+.mobile-nav-toggle.is-open .burger span { background: var(--c-accent); }
+.mobile-nav-toggle.is-open .burger span:nth-child(1),
+.mobile-nav-toggle.is-open .burger span:nth-child(3) {
+  top: 7px;
+  transition: top 0.25s ease 0s, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s, background-color 0.25s ease;
+}
+.mobile-nav-toggle.is-open .burger span:nth-child(1) { transform: rotate(45deg); }
+.mobile-nav-toggle.is-open .burger span:nth-child(3) { transform: rotate(-45deg); }
+.mobile-nav-toggle.is-open .burger span:nth-child(2) { opacity: 0; transform: scaleX(0); transition: opacity 0.15s ease, transform 0.2s ease; }
+
+/* drawer items slide in one after another when the menu opens */
+@media (max-width: 991px) {
+  #header .site-nav li {
+    opacity: 0;
+    translate: -16px 0;
+    transition: opacity 0.3s ease, translate 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .mobile-nav-active #header .site-nav li { opacity: 1; translate: 0 0; }
+  .mobile-nav-active #header .site-nav li:nth-child(1) { transition-delay: 0.15s; }
+  .mobile-nav-active #header .site-nav li:nth-child(2) { transition-delay: 0.2s; }
+  .mobile-nav-active #header .site-nav li:nth-child(3) { transition-delay: 0.25s; }
+  .mobile-nav-active #header .site-nav li:nth-child(4) { transition-delay: 0.3s; }
+  .mobile-nav-active #header .site-nav li:nth-child(5) { transition-delay: 0.35s; }
+  .mobile-nav-active #header .site-nav li:nth-child(6) { transition-delay: 0.4s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .burger span { transition: none !important; }
+  #header .site-nav li { transition: none !important; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   #header .site-nav a::before,

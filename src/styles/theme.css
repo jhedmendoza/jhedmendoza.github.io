@@ -84,9 +84,6 @@ body {
 .back-to-top { background: var(--c-accent-solid); color: var(--c-on-accent); }
 .back-to-top:hover { background: var(--c-accent-solid-hover); color: var(--c-on-accent); }
 
-.mobile-nav-toggle i { color: var(--c-text); }
-.mobile-nav-toggle:hover i,
-.mobile-nav-active .mobile-nav-toggle i { color: var(--c-accent); }
 
 /* soften bright screenshots and photos a touch in dark mode */
 :root[data-theme="dark"] .work-card-media img { filter: brightness(0.92); }

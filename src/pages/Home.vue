@@ -3,6 +3,7 @@
     <HeroSection />
 
     <main id="main">
+      <ExperienceSection />
       <StackSection />
       <PortfolioSection />
       <BlogSection />
@@ -16,11 +17,12 @@ import HeroSection from '../components/home/HeroSection.vue'
 import BlogSection from '../components/home/BlogSection.vue'
 import PortfolioSection from '../components/home/PortfolioSection.vue'
 import StackSection from '../components/home/StackSection.vue'
+import ExperienceSection from '../components/home/ExperienceSection.vue'
 import ContactSection from '../components/home/ContactSection.vue'
 
 export default {
   name: 'HomePage',
-  components: { HeroSection, BlogSection, PortfolioSection, StackSection, ContactSection },
+  components: { HeroSection, BlogSection, PortfolioSection, StackSection, ExperienceSection, ContactSection },
   async mounted() {
     // Load and initialize AOS so elements with data-aos are visible
     try {
