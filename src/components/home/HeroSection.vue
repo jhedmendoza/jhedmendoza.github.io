@@ -9,7 +9,7 @@
         <div class="hero-visual">
           <div class="hero-portrait">
             <picture>
-              <source type="image/webp" srcset="/assets/img/jhed-480.webp 480w, /assets/img/jhed-800.webp 800w" sizes="(max-width: 991px) 180px, 380px"/>
+              <source type="image/webp" srcset="/assets/img/jhed-480.webp 480w, /assets/img/jhed-800.webp 800w" sizes="(max-width: 991px) 150px, 320px"/>
               <img src="/assets/img/jhed-800.jpg" width="800" height="1063" alt="Illustrated portrait of Jhed Mendoza" fetchpriority="high"/>
             </picture>
           </div>
@@ -116,6 +116,10 @@ export default {
   align-items: center;
   gap: 20px;
 }
+/* desktop: nudge the portrait in from the right edge */
+@media (min-width: 992px) {
+  .hero-visual { margin-right: 60px; }
+}
 /* theme switch: pinned to the top-right corner of the hero */
 .hero-theme {
   position: absolute;
@@ -136,8 +140,8 @@ export default {
 
 .hero-portrait {
   flex-shrink: 0;
-  width: 380px;
-  height: 380px;
+  width: 320px;
+  height: 320px;
   border-radius: 50%;
   padding: 10px;
   border: 1px solid var(--hero-rule);
@@ -233,14 +237,14 @@ export default {
   .hero-visual { order: 0; }
   /* sit just left of the fixed menu button (top-right, 15px) */
   .hero-theme { top: 12px; right: 60px; }
-  .hero-portrait { width: 180px; height: 180px; padding: 6px; }
+  .hero-portrait { width: 150px; height: 150px; padding: 6px; }
   #hero .hero-bio { margin-left: auto; margin-right: auto; font-size: 15px; }
   .hero-actions { justify-content: center; margin-top: 26px; }
   #hero .social-links { margin-top: 28px; }
   #hero .social-links a { margin: 0 10px; }
 }
 @media (max-width: 991px) and (max-height: 700px) {
-  .hero-portrait { width: 140px; height: 140px; }
+  .hero-portrait { width: 120px; height: 120px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
