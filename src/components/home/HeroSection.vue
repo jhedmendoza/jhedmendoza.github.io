@@ -1,6 +1,6 @@
 <template>
   <section id="hero" class="d-flex flex-column justify-content-center">
-    <div id="particles-js" aria-hidden="true"></div>
+    <div id="particles-js" aria-hidden="true"><HeroCodeField /></div>
     <div class="hero-theme">
       <ThemeToggle />
     </div>
@@ -42,10 +42,11 @@
 
 <script>
 import ThemeToggle from '../ThemeToggle.vue'
+import HeroCodeField from './HeroCodeField.vue'
 
 export default {
   name: 'HeroSection',
-  components: { ThemeToggle },
+  components: { ThemeToggle, HeroCodeField },
   data() {
     return {
       typedItems: ['a Web Developer', 'a Freelancer', 'a Dreamer', 'a Father'],
@@ -73,33 +74,14 @@ export default {
     scrollTo(selector) {
       const el = document.querySelector(selector)
       if (el) el.scrollIntoView({ behavior: 'smooth' })
-    },
-    loadScript(src) {
-      return new Promise((resolve, reject) => {
-        const s = document.createElement('script')
-        s.src = src
-        s.onload = resolve
-        s.onerror = reject
-        document.body.appendChild(s)
-      })
     }
   },
-  async mounted() {
+  mounted() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       // no typing animation: show the first phrase statically
       this.typedText = this.typedItems[0]
     } else {
       this.updateTyped()
-    }
-
-    // dynamically load particles scripts (vendor assets) so particles effect works in dev and production
-    try {
-      const base = import.meta.env.BASE_URL || '/'
-      await this.loadScript(base + 'assets/vendor/particlesjs/particles.min.js')
-      // then load the app config which calls particlesJS('particles-js', ...)
-      await this.loadScript(base + 'assets/vendor/particlesjs/app.js')
-    } catch (e) {
-      console.warn('Particles failed to load', e)
     }
   },
   beforeUnmount() {
