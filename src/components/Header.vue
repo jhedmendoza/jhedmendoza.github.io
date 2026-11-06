@@ -113,7 +113,41 @@ export default {
   overflow: visible;
   transition: color 0.25s ease;
 }
-#header .site-nav a i { font-size: 22px; }
+#header .site-nav a i { font-size: 22px; display: inline-block; }
+
+/* hover micro-animations, one per icon */
+#header .site-nav a:hover .bx-home-alt,
+#header .site-nav a:focus-visible .bx-home-alt { animation: navHop 0.55s ease; }
+#header .site-nav a:hover .bx-book-open,
+#header .site-nav a:focus-visible .bx-book-open { animation: navPageTurn 0.6s ease; }
+#header .site-nav a:hover .bx-briefcase-alt-2,
+#header .site-nav a:focus-visible .bx-briefcase-alt-2 { animation: navWiggle 0.6s ease; }
+#header .site-nav a:hover .bx-envelope,
+#header .site-nav a:focus-visible .bx-envelope { animation: navSend 0.6s ease; }
+
+@keyframes navHop {
+  0%, 100% { transform: translateY(0); }
+  35%      { transform: translateY(-5px); }
+  60%      { transform: translateY(0); }
+  78%      { transform: translateY(-2px); }
+}
+@keyframes navPageTurn {
+  0%   { transform: perspective(80px) rotateY(0); }
+  50%  { transform: perspective(80px) rotateY(180deg); }
+  100% { transform: perspective(80px) rotateY(360deg); }
+}
+@keyframes navWiggle {
+  0%, 100% { transform: rotate(0); }
+  20%      { transform: rotate(-12deg); }
+  40%      { transform: rotate(10deg); }
+  60%      { transform: rotate(-6deg); }
+  80%      { transform: rotate(3deg); }
+}
+@keyframes navSend {
+  0%   { transform: translate(0, 0) rotate(0); }
+  45%  { transform: translate(3px, -4px) rotate(-12deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
 
 /* active marker: short accent bar on the left edge */
 #header .site-nav a::before {
@@ -195,5 +229,6 @@ export default {
 @media (prefers-reduced-motion: reduce) {
   #header .site-nav a::before,
   #header .site-nav a span { transition: none; }
+  #header .site-nav a i { animation: none !important; }
 }
 </style>
