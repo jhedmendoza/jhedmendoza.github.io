@@ -10,11 +10,7 @@
     </div>
 
     <article v-else-if="post" ref="article">
-      <figure v-if="post.featured_image" class="post-cover">
-        <img :src="post.featured_image" :alt="post.title" fetchpriority="high"/>
-      </figure>
-
-      <header :class="['post-wrap', 'post-header', { 'has-cover': post.featured_image }]">
+      <header class="post-wrap post-header">
         <p class="post-meta">
           <time :datetime="post.date">{{ post.dateLabel }}</time>
           <span aria-hidden="true">·</span>
@@ -40,6 +36,8 @@
           <router-link to="/#contact" class="post-link">Get in touch</router-link>
         </div>
       </footer>
+
+      <PostComments :key="postId" :page-id="postId" />
     </article>
   </div>
 </template>
@@ -47,13 +45,19 @@
 <script>
 import axios from 'axios'
 import BlogTopbar from '../components/blog/BlogTopbar.vue'
+import PostComments from '../components/blog/PostComments.vue'
 
 const API = 'https://public-api.wordpress.com/rest/v1.1/sites/jhedmendoza.wordpress.com/posts/'
 const WORDS_PER_MINUTE = 200
 
 export default {
   name: 'PostPage',
-  components: { BlogTopbar },
+  components: { BlogTopbar, PostComments },
+  computed: {
+    postId() {
+      return String(this.$route?.params?.postId || new URLSearchParams(window.location.search).get('postId') || '')
+    }
+  },
   data() {
     return { post: null, isLoading: true, error: '', progress: 0 }
   },
@@ -94,7 +98,6 @@ export default {
           title,
           excerpt: isAutoExcerpt ? '' : excerpt,
           content: data.content,
-          featured_image: data.featured_image,
           date: date.toISOString().split('T')[0],
           dateLabel: date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
           readTime: Math.max(1, Math.round(words / WORDS_PER_MINUTE))
@@ -200,21 +203,6 @@ export default {
   line-height: 1.6;
   color: var(--post-muted);
   margin: 20px 0 0;
-}
-
-/* with a cover above it, the header needs less top space */
-.post-header.has-cover { padding-top: 56px; }
-
-/* cover image: full-bleed, edge to edge, directly under the top bar */
-.post-cover {
-  margin: 0;
-  border-bottom: 1px solid var(--post-rule);
-}
-.post-cover img {
-  width: 100%;
-  max-height: 70vh;
-  object-fit: cover;
-  display: block;
 }
 
 /* body copy */
@@ -349,7 +337,5 @@ export default {
   .post-lead { font-size: 17px; }
   .post-content { font-size: 17px; }
   .post-content h2 { font-size: 24px; }
-  .post-header.has-cover { padding-top: 36px; }
-  .post-cover img { max-height: 50vh; }
 }
 </style>

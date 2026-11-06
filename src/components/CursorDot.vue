@@ -5,8 +5,9 @@
 <script>
 // elements that make the dot grow
 const INTERACTIVE = 'a, button, [role="button"], [role="tab"], label, summary, .work-card, .blog-card, .posts-item'
-// elements where the normal text cursor is more useful than the dot
-const TEXT_FIELDS = 'input, textarea, select, [contenteditable="true"]'
+// elements where the normal cursor is more useful than the dot
+// (iframes, e.g. the comments box, don't pass mouse moves to the page, so the dot would freeze there)
+const TEXT_FIELDS = 'input, textarea, select, [contenteditable="true"], iframe'
 
 export default {
   name: 'CursorDot',

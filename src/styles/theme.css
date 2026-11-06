@@ -89,6 +89,5 @@ body {
 .mobile-nav-active .mobile-nav-toggle i { color: var(--c-accent); }
 
 /* soften bright screenshots and photos a touch in dark mode */
-:root[data-theme="dark"] .work-card-media img,
-:root[data-theme="dark"] .post-cover img { filter: brightness(0.92); }
+:root[data-theme="dark"] .work-card-media img { filter: brightness(0.92); }
 :root[data-theme="dark"] .hero-portrait { background: var(--c-bg); }
