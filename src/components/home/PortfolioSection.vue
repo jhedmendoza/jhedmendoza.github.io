@@ -27,6 +27,9 @@
 </template>
 
 <script>
+// how far (as % of the image height) a screenshot travels while its card crosses the screen
+const PARALLAX_SHIFT = 20
+
 export default {
   name: 'PortfolioSection',
   data() {
@@ -68,7 +71,48 @@ export default {
     labelFor(category) {
       const f = this.filters.find(f => f.value === category)
       return f ? f.label : category
+    },
+    // parallax: as a card travels up the viewport, its screenshot slides up inside the frame
+    requestParallax() {
+      if (this._parallaxFrame) return
+      this._parallaxFrame = requestAnimationFrame(() => {
+        this._parallaxFrame = null
+        this.updateParallax()
+      })
+    },
+    updateParallax() {
+      const vh = window.innerHeight
+      const frames = this.$el.querySelectorAll('.work-card-media')
+      frames.forEach((frame) => {
+        const rect = frame.getBoundingClientRect()
+        if (rect.bottom < 0 || rect.top > vh) return // off-screen: leave as is
+        // 0 when the frame enters at the bottom, 1 when it leaves at the top
+        const progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh + rect.height)))
+        frame.style.setProperty('--parallax', (-progress * PARALLAX_SHIFT).toFixed(2) + '%')
+      })
     }
+  },
+  watch: {
+    // re-measure after filtering re-arranges the grid (wait for the move animation)
+    portfolioFilter() {
+      this.$nextTick(() => {
+        this.requestParallax()
+        setTimeout(() => this.requestParallax(), 550)
+      })
+    }
+  },
+  mounted() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    this._parallaxOn = true
+    window.addEventListener('scroll', this.requestParallax, { passive: true })
+    window.addEventListener('resize', this.requestParallax)
+    this.updateParallax()
+  },
+  beforeUnmount() {
+    if (!this._parallaxOn) return
+    window.removeEventListener('scroll', this.requestParallax)
+    window.removeEventListener('resize', this.requestParallax)
+    cancelAnimationFrame(this._parallaxFrame)
   }
 }
 </script>
@@ -143,6 +187,7 @@ export default {
 .work-card:focus-visible { color: var(--work-ink); text-decoration: none; }
 .work-card:focus-visible { outline: 2px solid var(--work-accent); outline-offset: 6px; }
 .work-card-media {
+  position: relative;
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: 4px;
@@ -150,14 +195,19 @@ export default {
 }
 .work-card-media img {
   width: 100%;
-  height: 100%;
+  /* taller than the frame so there is room to slide (25% extra = 20% of the image) */
+  height: 125%;
   object-fit: cover;
-  /* screenshots: keep the top of the site (logo / hero) in frame */
+  /* screenshots: start at the top of the site (logo / hero) */
   object-position: top center;
   display: block;
-  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  translate: 0 var(--parallax, 0%);
+  will-change: translate;
+  /* only the hover zoom is animated; the parallax follows the scroll directly */
+  transform-origin: center 30%;
+  transition: scale 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-.work-card:hover .work-card-media img { transform: scale(1.04); }
+.work-card:hover .work-card-media img { scale: 1.04; }
 
 .work-card-caption {
   padding-top: 16px;

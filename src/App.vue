@@ -5,15 +5,17 @@
       <router-view />
     </main>
     <FooterComp v-if="showFooter" />
+    <CursorDot />
   </div>
 </template>
 
 <script>
 import HeaderComp from './components/Header.vue'
 import FooterComp from './components/Footer.vue'
+import CursorDot from './components/CursorDot.vue'
 
 export default {
-  components: { HeaderComp, FooterComp },
+  components: { HeaderComp, FooterComp, CursorDot },
   computed: {
     showHeader() {
       return !(this.$route && this.$route.matched && this.$route.matched.some(r => r.meta && r.meta.hideHeader))
