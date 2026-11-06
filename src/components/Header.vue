@@ -32,6 +32,15 @@ export default {
       activeSection: ''
     }
   },
+  watch: {
+    // style.css slides #header in when <body> has .mobile-nav-active
+    mobileNavActive(active) {
+      document.body.classList.toggle('mobile-nav-active', active)
+    },
+    $route() {
+      this.mobileNavActive = false
+    }
+  },
   methods: {
     toggleMobileNav() {
       this.mobileNavActive = !this.mobileNavActive
@@ -65,6 +74,7 @@ export default {
   },
   beforeUnmount() {
     if (this._headerOnScroll) window.removeEventListener('scroll', this._headerOnScroll)
+    document.body.classList.remove('mobile-nav-active')
   }
 }
 </script>

@@ -25,7 +25,8 @@ label.error {font-size:12px;color:red}
     z-index: 0;
 }
 
-#hero .container { position: relative; z-index: 999999999 }
+/* sit above #particles-js (z-index 0) but below the fixed header (9997) and mobile toggle (9998) */
+#hero .container { position: relative; z-index: 1 }
 
 canvas {
     display: block;
