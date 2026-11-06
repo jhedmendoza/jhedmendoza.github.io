@@ -20,7 +20,6 @@
                 </p>
                 <h3 class="blog-card-title">{{ post.post_title }}</h3>
                 <p class="blog-card-excerpt">{{ post.post_exerpt }}</p>
-                <span class="blog-card-more">Read post <i class="bx bx-right-arrow-alt"></i></span>
               </router-link>
             </div>
           </div>
@@ -33,7 +32,7 @@
       </div>
 
       <div v-if="!isLoadingPosts" class="text-center">
-        <router-link to="/posts" class="blog-view-all">View all posts <i class="bx bx-right-arrow-alt"></i></router-link>
+        <router-link to="/posts" class="blog-view-all">View all posts</router-link>
       </div>
     </div>
   </section>
@@ -217,27 +216,12 @@ export default {
   font-size: 15px;
   line-height: 1.7;
   color: var(--blog-muted);
-  margin: 0 0 20px;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.blog-card-more {
-  margin-top: auto;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--blog-ink);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.blog-card-more i {
-  font-size: 18px;
-  transition: transform 0.25s ease;
-}
-.blog-card:hover .blog-card-more { color: var(--blog-accent); }
-.blog-card:hover .blog-card-more i { transform: translateX(4px); }
 
 /* pagination: pill for the active page */
 .blog-slider-dots {
@@ -273,8 +257,6 @@ export default {
   transition: color 0.25s ease, border-color 0.25s ease;
 }
 .blog-view-all:hover { color: var(--blog-accent); border-color: var(--blog-accent); text-decoration: none; }
-.blog-view-all i { font-size: 18px; transition: transform 0.25s ease; }
-.blog-view-all:hover i { transform: translateX(4px); }
 
 @media (max-width: 767px) {
   .blog-slide { padding: 0 15px; }
@@ -282,8 +264,6 @@ export default {
 }
 @media (prefers-reduced-motion: reduce) {
   .blog-slider-track,
-  .blog-card::before,
-  .blog-card-more i,
-  .blog-view-all i { transition: none; }
+  .blog-card::before { transition: none; }
 }
 </style>

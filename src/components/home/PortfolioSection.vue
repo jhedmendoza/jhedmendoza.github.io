@@ -17,11 +17,8 @@
             <img :src="item.image" :alt="item.title" loading="lazy"/>
           </div>
           <div class="work-card-caption">
-            <div>
-              <h3 class="work-card-title">{{ item.title }}</h3>
-              <p class="work-card-tag">{{ labelFor(item.category) }}</p>
-            </div>
-            <i class="bx bx-right-top-arrow-circle work-card-arrow" aria-hidden="true"></i>
+            <h3 class="work-card-title">{{ item.title }}</h3>
+            <p class="work-card-tag">{{ labelFor(item.category) }}</p>
           </div>
         </a>
       </TransitionGroup>
@@ -163,10 +160,6 @@ export default {
 .work-card:hover .work-card-media img { transform: scale(1.04); }
 
 .work-card-caption {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
   padding-top: 16px;
   text-align: left;
 }
@@ -186,15 +179,7 @@ export default {
   color: var(--work-muted);
   margin: 0;
 }
-.work-card-arrow {
-  font-size: 22px;
-  color: var(--work-muted);
-  flex-shrink: 0;
-  transition: color 0.25s ease, transform 0.25s ease;
-}
-.work-card:hover .work-card-title,
-.work-card:hover .work-card-arrow { color: var(--work-accent); }
-.work-card:hover .work-card-arrow { transform: translate(2px, -2px); }
+.work-card:hover .work-card-title { color: var(--work-accent); }
 
 /* filter animation: new items fade up, remaining items glide to their new spot */
 .work-item-move { transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1); }
