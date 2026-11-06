@@ -1,23 +1,39 @@
 <template>
-  <section id="news" class="services">
+  <section id="news" class="blog">
     <div class="container">
       <div class="section-title"><h2>Blog</h2></div>
-      <div class="row news-container">
-        <div v-if="isLoadingPosts" class="col-12 text-center">Loading latest posts...</div>
-        <div v-else-if="postsError" class="col-12 text-danger">{{ postsError }}</div>
-        <div v-else v-for="(post, i) in posts" :key="post.post_id" class="col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-          <router-link :to="{ name: 'post', params: { postId: post.post_id, slug: post.post_slug } }" :class="['icon-box','iconbox-'+colors[i % colors.length],'w-100','news-content']" v-bind:data-id="i" v-bind:data-color="hexColors[i % hexColors.length]">
-            <div class="icon">
-              <svg width="100" height="100" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
-                <path stroke="none" stroke-width="0" fill="#f5f5f5" :d="svg[i % svg.length]"></path>
-              </svg>
-              <i :class="['bx', icons[i % icons.length]]"></i>
+      <div v-if="isLoadingPosts" class="text-center blog-status">Loading latest posts...</div>
+      <div v-else-if="postsError" class="text-center text-danger">{{ postsError }}</div>
+
+      <div v-else class="blog-slider" data-aos="fade-up" data-aos-delay="100"
+           @touchstart.passive="onTouchStart" @touchend="onTouchEnd">
+        <div class="blog-slider-viewport">
+          <div class="blog-slider-track" :style="{ transform: `translateX(-${page * 100}%)` }">
+            <div v-for="(post, i) in posts" :key="post.post_id" class="blog-slide" :style="{ flexBasis: 100 / perView + '%' }"
+                 :aria-hidden="!isVisible(i)">
+              <router-link :to="{ name: 'post', params: { postId: post.post_id, slug: post.post_slug } }"
+                           :tabindex="isVisible(i) ? 0 : -1" class="blog-card">
+                <span class="blog-card-index">{{ String(i + 1).padStart(2, '0') }}</span>
+                <p class="blog-card-meta">
+                  <time :datetime="post.post_date">{{ post.post_date_label }}</time>
+                  <template v-if="post.read_time"> · {{ post.read_time }} min read</template>
+                </p>
+                <h3 class="blog-card-title">{{ post.post_title }}</h3>
+                <p class="blog-card-excerpt">{{ post.post_exerpt }}</p>
+                <span class="blog-card-more">Read post <i class="bx bx-right-arrow-alt"></i></span>
+              </router-link>
             </div>
-            <p class="news-date mb-0 float-right">{{ post.post_date }}</p>
-            <h4 class="news-title mb-1">{{ post.post_title }}</h4>
-            <p>{{ post.post_exerpt }}</p>
-          </router-link>
+          </div>
         </div>
+
+        <div v-if="pageCount > 1" class="blog-slider-dots">
+          <button v-for="n in pageCount" :key="n" type="button" :class="['blog-slider-dot', { active: page === n - 1 }]"
+                  :aria-label="`Go to page ${n}`" :aria-current="page === n - 1" @click="page = n - 1"></button>
+        </div>
+      </div>
+
+      <div v-if="!isLoadingPosts" class="text-center">
+        <router-link to="/posts" class="blog-view-all">View all posts <i class="bx bx-right-arrow-alt"></i></router-link>
       </div>
     </div>
   </section>
@@ -26,50 +42,69 @@
 <script>
 import axios from 'axios'
 
-const WP_API_URL = 'https://public-api.wordpress.com/rest/v1.1/sites/jhedmendoza.wordpress.com/posts?http_envelope=1'
+const WP_API_URL = 'https://public-api.wordpress.com/rest/v1.1/sites/jhedmendoza.wordpress.com/posts?http_envelope=1&number=10'
+const WORDS_PER_MINUTE = 200
 
 export default {
   name: 'BlogSection',
   data() {
     return {
-      icons: ['bxl-dribbble','bx-file','bx-tachometer'],
-      colors: ['blue','orange','pink'],
-      hexColors: ['#47aeff','#ffa76e','#e80368'],
-      svg: [
-        'M300,521.0016835830174C376.1290562159157,517.8887921683347,466.0731472004068,529.7835943286574,510.70327084640275,468.03025145048787C554.3714126377745,407.6079735673963,508.03601936045806,328.9844924480964,491.2728898941984,256.3432110539036C474.5976632858925,184.082847569629,479.9380746630129,96.60480741107993,416.23090153303,58.64404602377083C348.86323505073057,18.502131276798302,261.93793281208167,40.57373210992963,193.5410806939664,78.93577620505333C130.42746243093433,114.334589627462,98.30271207620316,179.96522072025542,76.75703585869454,249.04625023123273C51.97151888228291,328.5150500222984,13.704378332031375,421.85034740162234,66.52175969318436,486.19268352777647C119.04800174914682,550.1803526380478,217.28368757567262,524.383925680826,300,521.0016835830174',
-        'M300,582.0697525312426C382.5290701553225,586.8405444964366,449.9789794690241,525.3245884688669,502.5850820975895,461.55621195738473C556.606425686781,396.0723002908107,615.8543463187945,314.28637112970534,586.6730223649479,234.56875336149918C558.9533121215079,158.8439757836574,454.9685369536778,164.00468322053177,381.49747125262974,130.76875717737553C312.15926192815925,99.40240125094834,248.97055460311594,18.661163978235184,179.8680185752513,50.54337015887873C110.5421016452524,82.52863877960104,119.82277516462835,180.83849132639028,109.12597500060166,256.43424936330496C100.08760227029461,320.3096726198365,92.17705696193138,384.0621239912766,124.79988738764834,439.7174275375508C164.83382741302287,508.01625554203684,220.96474134820875,577.5009287672846,300,582.0697525312426',
-        'M300,541.5067337569781C382.14930387511276,545.0595476570109,479.8736841581634,548.3450877840088,526.4010558755058,480.5488172755941C571.5218469581645,414.80211281144784,517.5187510058486,332.0715597781072,496.52539010469104,255.14436215662573C477.37192572678356,184.95920475031193,473.57363656557914,105.61284051026155,413.0603344069578,65.22779650032875C343.27470386102294,18.654635553484475,251.2091493199835,5.337323636656869,175.0934190732945,40.62881213300186C97.87086631185822,76.43348514350839,51.98124368387456,156.15599469081315,36.44837278890362,239.84606092416172C21.716077023791087,319.22268207091537,43.775223500013084,401.1760424656574,96.891909868211,461.97329694683043C147.22146801428983,519.5804099606455,223.5754009179313,538.201503339737,300,541.5067337569781'
-      ],
       posts: [],
       isLoadingPosts: true,
-      postsError: ''
+      postsError: '',
+      page: 0,
+      perView: 2
+    }
+  },
+  computed: {
+    pageCount() {
+      return Math.max(1, Math.ceil(this.posts.length / this.perView))
+    }
+  },
+  watch: {
+    // keep the current page in range when the layout switches between 1 and 2 cards
+    pageCount(count) {
+      if (this.page > count - 1) this.page = count - 1
     }
   },
   methods: {
+    prev() { if (this.page > 0) this.page-- },
+    next() { if (this.page < this.pageCount - 1) this.page++ },
+    isVisible(i) { return Math.floor(i / this.perView) === this.page },
+    updatePerView() { this.perView = window.innerWidth >= 768 ? 2 : 1 },
+    onTouchStart(e) { this._touchX = e.changedTouches[0].clientX },
+    onTouchEnd(e) {
+      if (this._touchX == null) return
+      const dx = e.changedTouches[0].clientX - this._touchX
+      this._touchX = null
+      if (Math.abs(dx) < 40) return
+      if (dx < 0) this.next(); else this.prev()
+    },
     stripTags(html) { const d = document.createElement('div'); d.innerHTML = html; return d.textContent || d.innerText || '' },
+    toPost(p) {
+      const date = p.date ? new Date(p.date) : null
+      const words = this.stripTags(p.content || '').trim().split(/\s+/).filter(Boolean).length
+      return {
+        post_id: p.ID || p.id,
+        post_title: this.stripTags(p.title || p.post_title || ''),
+        post_slug: p.slug || p.post_name || '',
+        post_date: date ? date.toISOString().split('T')[0] : '',
+        post_date_label: date ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+        read_time: words ? Math.max(1, Math.round(words / WORDS_PER_MINUTE)) : 0,
+        // full excerpt; CSS clamps it to 3 lines so it never cuts mid-word
+        post_exerpt: this.stripTags(p.excerpt || p.post_excerpt || '').trim()
+      }
+    },
     async fetchPosts() {
       this.isLoadingPosts = true
       this.postsError = ''
       try {
         const resp = await axios.get(WP_API_URL, { timeout: 8000 })
         const data = resp.data
+        const list = Array.isArray(data?.body?.posts) ? data.body.posts : Array.isArray(data?.posts) ? data.posts : []
 
-        if (data?.body?.found > 0 && Array.isArray(data.body.posts)) {
-          this.posts = data.body.posts.map(p => ({
-            post_id: p.ID,
-            post_title: p.title,
-            post_slug: p.slug,
-            post_date: new Date(p.date).toISOString().split('T')[0],
-            post_exerpt: this.stripTags(p.excerpt).slice(0, 100)
-          }))
-        } else if (Array.isArray(data?.posts) && data.posts.length > 0) {
-          this.posts = data.posts.map(p => ({
-            post_id: p.ID || p.id,
-            post_title: p.title || p.post_title || '',
-            post_slug: p.slug || p.post_name || '',
-            post_date: p.date ? new Date(p.date).toISOString().split('T')[0] : '',
-            post_exerpt: this.stripTags(p.excerpt || p.post_excerpt || '').slice(0, 100)
-          }))
+        if (list.length) {
+          this.posts = list.map(this.toPost)
         } else {
           this.posts = []
           this.postsError = 'No posts found.'
@@ -90,7 +125,165 @@ export default {
     }
   },
   mounted() {
+    this.updatePerView()
+    window.addEventListener('resize', this.updatePerView)
     this.fetchPosts()
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updatePerView)
   }
 }
 </script>
+
+<style>
+.blog {
+  --blog-ink: #272829;
+  --blog-muted: #7b858f;
+  --blog-rule: #e4e8ec;
+  --blog-accent: #0563bb;
+}
+.blog-status { color: var(--blog-muted); }
+
+/* slider */
+.blog-slider-viewport { overflow: hidden; }
+.blog-slider-track {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+}
+.blog-slide {
+  flex: 0 0 50%;
+  min-width: 0;
+  padding: 0 20px;
+  display: flex;
+}
+
+/* card: no box, no shadow — just type and a hairline rule */
+.blog-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 28px 0 8px;
+  border-top: 1px solid var(--blog-rule);
+  color: var(--blog-ink);
+  text-align: left;
+}
+.blog-card::before {
+  /* accent line that draws across the rule on hover */
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--blog-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s ease;
+}
+.blog-card:hover,
+.blog-card:focus-visible { color: var(--blog-ink); text-decoration: none; }
+.blog-card:hover::before,
+.blog-card:focus-visible::before { transform: scaleX(1); }
+.blog-card:focus-visible { outline: 2px solid var(--blog-accent); outline-offset: 6px; }
+
+.blog-card-index {
+  font-family: Poppins, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--blog-accent);
+  margin-bottom: 14px;
+}
+.blog-card-meta {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--blog-muted);
+  margin-bottom: 8px;
+}
+.blog-card-title {
+  font-family: Poppins, sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 0 0 12px;
+  color: var(--blog-ink);
+  transition: color 0.25s ease;
+}
+.blog-card:hover .blog-card-title { color: var(--blog-accent); }
+.blog-card-excerpt {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--blog-muted);
+  margin: 0 0 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.blog-card-more {
+  margin-top: auto;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blog-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.blog-card-more i {
+  font-size: 18px;
+  transition: transform 0.25s ease;
+}
+.blog-card:hover .blog-card-more { color: var(--blog-accent); }
+.blog-card:hover .blog-card-more i { transform: translateX(4px); }
+
+/* pagination: pill for the active page */
+.blog-slider-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 32px;
+}
+.blog-slider-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  border: 0;
+  padding: 0;
+  background: var(--blog-rule);
+  cursor: pointer;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+.blog-slider-dot:hover { background: var(--blog-muted); }
+.blog-slider-dot.active { width: 22px; background: var(--blog-accent); }
+
+/* view all: quiet text link */
+.blog-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 28px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blog-ink);
+  border-bottom: 1px solid var(--blog-rule);
+  padding-bottom: 2px;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+.blog-view-all:hover { color: var(--blog-accent); border-color: var(--blog-accent); text-decoration: none; }
+.blog-view-all i { font-size: 18px; transition: transform 0.25s ease; }
+.blog-view-all:hover i { transform: translateX(4px); }
+
+@media (max-width: 767px) {
+  .blog-slide { padding: 0 15px; }
+  .blog-card-title { font-size: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .blog-slider-track,
+  .blog-card::before,
+  .blog-card-more i,
+  .blog-view-all i { transition: none; }
+}
+</style>

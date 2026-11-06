@@ -1,52 +1,35 @@
 <template>
-  <section id="portfolio" class="portfolio section-bg">
+  <section id="portfolio" class="work section-bg">
     <div class="container">
       <div class="section-title"><h2>Portfolio</h2><p>Explore my web development portfolio here</p></div>
-      <div class="row">
-        <div class="col-lg-12 d-flex justify-content-center">
-          <ul id="portfolio-flters">
-            <li v-for="f in filters" :key="f.value" :class="{ 'filter-active': portfolioFilter === f.value }" @click.prevent="setFilter(f.value)">{{ f.label }}</li>
-          </ul>
-        </div>
+
+      <div class="work-filters" role="tablist" aria-label="Filter projects">
+        <button v-for="f in filters" :key="f.value" type="button" role="tab"
+                :class="['work-filter', { active: portfolioFilter === f.value }]"
+                :aria-selected="portfolioFilter === f.value" @click="portfolioFilter = f.value">
+          {{ f.label }}<sup class="work-filter-count">{{ countFor(f.value) }}</sup>
+        </button>
       </div>
-      <div ref="container" class="row portfolio-container">
-        <div v-for="item in filteredPortfolio" :key="item.title" :class="['col-lg-4 col-md-6 portfolio-item', item.category]">
-          <div class="portfolio-wrap">
-            <img :src="item.image" class="img-fluid" :alt="item.title"/>
-            <div class="portfolio-info"><h4>{{ item.title }}</h4><div class="portfolio-links"><a :href="item.link" target="_blank"><i class="bx bx-link"></i></a></div></div>
+
+      <TransitionGroup tag="div" name="work-item" class="work-grid">
+        <a v-for="item in filteredPortfolio" :key="item.title" :href="item.link" target="_blank" rel="noopener" class="work-card">
+          <div class="work-card-media">
+            <img :src="item.image" :alt="item.title" loading="lazy"/>
           </div>
-        </div>
-      </div>
+          <div class="work-card-caption">
+            <div>
+              <h3 class="work-card-title">{{ item.title }}</h3>
+              <p class="work-card-tag">{{ labelFor(item.category) }}</p>
+            </div>
+            <i class="bx bx-right-top-arrow-circle work-card-arrow" aria-hidden="true"></i>
+          </div>
+        </a>
+      </TransitionGroup>
     </div>
   </section>
 </template>
 
 <script>
-const loadScript = (src) => new Promise((resolve, reject) => {
-  const s = document.createElement('script')
-  s.src = src
-  s.onload = resolve
-  s.onerror = reject
-  document.body.appendChild(s)
-})
-
-// wait for all images inside a container to load (fallback when imagesLoaded is unavailable)
-const waitForImages = (container) => new Promise((resolve) => {
-  if (!container) return resolve()
-  const imgs = Array.from(container.querySelectorAll('img'))
-  if (!imgs.length) return resolve()
-  let loaded = 0
-  const check = () => { loaded++; if (loaded >= imgs.length) resolve() }
-  imgs.forEach((img) => {
-    if (img.complete && img.naturalHeight !== 0) return check()
-    const onLoad = () => { img.removeEventListener('load', onLoad); img.removeEventListener('error', onLoad); check() }
-    img.addEventListener('load', onLoad)
-    img.addEventListener('error', onLoad)
-    // safety timeout per image
-    setTimeout(onLoad, 3000)
-  })
-})
-
 export default {
   name: 'PortfolioSection',
   data() {
@@ -72,7 +55,7 @@ export default {
         { title: 'Dragon Mania Legends', category: 'zend', link: 'https://dragonmanialegends.com/', image: '/assets/img/portfolio/zend/dragonmanialegends.jpeg' },
         { title: 'Naxos Music Box', category: 'wordpress', link: 'https://www.naxosmusicbox.com/', image: '/assets/img/portfolio/wordpress/naxosmusicbox.jpeg' },
         { title: 'Naxos Audiobooks', category: 'wordpress', link: 'https://naxosaudiobooks.com/', image: '/assets/img/portfolio/wordpress/naxosaudiobooks.jpeg' },
-        { title: 'Gameloft IN', category: 'zend', link: 'https://jhedmendoza.is-a.dev/projects/gameloft_in', image: '/assets/img/portfolio/zend/gameloft_in.png' }
+        { title: 'Gameloft IN', category: 'zend', link: '/projects/gameloft_in/', image: '/assets/img/portfolio/zend/gameloft_in.png' }
       ]
     }
   },
@@ -82,78 +65,147 @@ export default {
     }
   },
   methods: {
-    arrange(filter) {
-      const filterVal = filter === '*' ? '*' : '.' + filter
-      try { this._iso.reloadItems() } catch (e) {}
-      this._iso.arrange({ filter: filterVal })
-      this._iso.layout()
+    countFor(value) {
+      return value === '*' ? this.portfolioItems.length : this.portfolioItems.filter(i => i.category === value).length
     },
-    async setFilter(f) {
-      this.portfolioFilter = f
-      // apply isotope filter if available, but wait for images to be loaded to avoid collapsed heights
-      try {
-        if (this._iso) {
-          const container = this.$refs.container
-          if (window.imagesLoaded && container) {
-            window.imagesLoaded(container, () => this.arrange(f))
-          } else {
-            await waitForImages(container)
-            this.arrange(f)
-          }
-        }
-      } catch (e) {
-        console.warn('Isotope arrange failed', e)
-      }
-    }
-  },
-  async mounted() {
-    // Initialize Isotope for portfolio filtering/layout
-    try {
-      const base = import.meta.env.BASE_URL || '/'
-      if (!window.Isotope) {
-        await loadScript(base + 'assets/vendor/isotope-layout/isotope.pkgd.min.js')
-      }
-      // load imagesLoaded from CDN if available for robust layout handling
-      if (!window.imagesLoaded) {
-        try {
-          await loadScript('https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js')
-        } catch (e) {
-          // ignore - we'll fall back to manual waiting
-        }
-      }
-
-      const container = this.$refs.container
-      // wait for images to load before initializing
-      if (window.imagesLoaded && container) {
-        await new Promise((resolve) => window.imagesLoaded(container, resolve))
-      } else {
-        await waitForImages(container)
-      }
-
-      if (container && window.Isotope) {
-        this._iso = new window.Isotope(container, {
-          itemSelector: '.portfolio-item',
-          layoutMode: 'masonry',
-          percentPosition: true,
-          masonry: { columnWidth: '.portfolio-item' },
-          transitionDuration: '0.45s',
-          stagger: 40,
-          visibleStyle: { opacity: 1, transform: 'translateY(0)' },
-          hiddenStyle: { opacity: 0, transform: 'translateY(20px)' }
-        })
-        // apply initial filter once images are laid out
-        const doArrange = () => this.arrange(this.portfolioFilter)
-        if (window.imagesLoaded) window.imagesLoaded(container, doArrange); else doArrange()
-      }
-    } catch (err) {
-      console.warn('Isotope init failed', err)
-    }
-  },
-  beforeUnmount() {
-    if (this._iso) {
-      try { this._iso.destroy() } catch (e) {}
-      this._iso = null
+    labelFor(category) {
+      const f = this.filters.find(f => f.value === category)
+      return f ? f.label : category
     }
   }
 }
 </script>
+
+<style>
+.work {
+  --work-ink: #272829;
+  --work-muted: #7b858f;
+  --work-rule: #e4e8ec;
+  --work-accent: #0563bb;
+}
+
+/* filters: plain text tabs with an underline for the active one */
+.work-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 28px;
+  margin-bottom: 40px;
+}
+.work-filter {
+  position: relative;
+  border: 0;
+  background: none;
+  padding: 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--work-muted);
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+.work-filter::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--work-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+.work-filter:hover,
+.work-filter.active { color: var(--work-ink); }
+.work-filter.active::after { transform: scaleX(1); }
+.work-filter:focus-visible { outline: 2px solid var(--work-accent); outline-offset: 4px; }
+.work-filter-count {
+  font-size: 10px;
+  font-weight: 500;
+  margin-left: 3px;
+  color: var(--work-muted);
+}
+
+/* grid */
+.work-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 48px 32px;
+}
+@media (max-width: 991px) { .work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 575px) { .work-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; } }
+
+/* card: image + caption, no overlay, no shadow */
+.work-card {
+  display: block;
+  color: var(--work-ink);
+}
+.work-card:hover,
+.work-card:focus-visible { color: var(--work-ink); text-decoration: none; }
+.work-card:focus-visible { outline: 2px solid var(--work-accent); outline-offset: 6px; }
+.work-card-media {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--work-rule);
+}
+.work-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* screenshots: keep the top of the site (logo / hero) in frame */
+  object-position: top center;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.work-card:hover .work-card-media img { transform: scale(1.04); }
+
+.work-card-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-top: 16px;
+  text-align: left;
+}
+.work-card-title {
+  font-family: Poppins, sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 0 0 4px;
+  color: var(--work-ink);
+  transition: color 0.25s ease;
+}
+.work-card-tag {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--work-muted);
+  margin: 0;
+}
+.work-card-arrow {
+  font-size: 22px;
+  color: var(--work-muted);
+  flex-shrink: 0;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+.work-card:hover .work-card-title,
+.work-card:hover .work-card-arrow { color: var(--work-accent); }
+.work-card:hover .work-card-arrow { transform: translate(2px, -2px); }
+
+/* filter animation: new items fade up, remaining items glide to their new spot */
+.work-item-move { transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1); }
+.work-item-enter-active { transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s; }
+.work-item-enter-from { opacity: 0; transform: translateY(12px); }
+.work-item-leave-active { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .work-item-move,
+  .work-item-enter-active,
+  .work-card-media img,
+  .work-filter::after { transition: none; }
+}
+</style>
