@@ -2,13 +2,12 @@
   <footer id="footer">
     <div class="container">
       <div class="social-links">
-        <a href="https://www.linkedin.com/in/jhedmendoza/" class="linkedin" target="_blank"><i class="bx bxl-linkedin"></i></a>
-        <a href="https://github.com/jhedmendoza" class="github" target="_blank"><i class="bx bxl-github"></i></a>
-        <a href="https://twitter.com/_jhedm" target="_blank" class="twitter"><i class="bx bxl-twitter"></i></a>
-        <a href="https://www.instagram.com/jhedmendoza/" class="instagram" target="_blank"><i class="bx bxl-instagram"></i></a>
+        <a href="https://www.instagram.com/jhedmendoza/" target="_blank" rel="noopener" class="instagram" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="https://github.com/jhedmendoza" target="_blank" rel="noopener" class="github" aria-label="GitHub"><i class="bx bxl-github"></i></a>
+        <a href="https://www.linkedin.com/in/jhedmendoza/" target="_blank" rel="noopener" class="linkedin" aria-label="LinkedIn"><i class="bx bxl-linkedin"></i></a>
       </div>
       <div class="copyright">
-        &copy; Copyright <strong><span>jhedmendoza</span></strong>. All Rights Reserved
+        &copy; {{ year }} <strong>Jhed Mendoza</strong>. All rights reserved.
       </div>
     </div>
   </footer>
@@ -30,7 +29,8 @@ export default {
   name: 'FooterComp',
   data() {
     return {
-      showBackToTop: false
+      showBackToTop: false,
+      year: new Date().getFullYear()
     }
   },
   methods: {
@@ -79,6 +79,43 @@ export default {
 </script>
 
 <style>
+/* footer: plain icons and a hairline rule, matching the hero and section styles */
+#footer {
+  background: var(--c-bg);
+  border-top: 1px solid var(--c-rule);
+  padding: 40px 0 36px;
+}
+#footer .social-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 0 0 18px;
+}
+#footer .social-links a {
+  width: auto;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border-radius: 0;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--c-muted);
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+#footer .social-links a:hover {
+  background: none;
+  color: var(--c-accent);
+  transform: translateY(-2px);
+}
+#footer .social-links a:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 4px; }
+#footer .copyright {
+  font-size: 13px;
+  color: var(--c-muted);
+  margin: 0;
+}
+#footer .copyright strong { color: var(--c-text); font-weight: 600; }
+
 /* style.css hides .back-to-top by default; visibility is controlled by v-if here */
 .back-to-top {
   display: block;

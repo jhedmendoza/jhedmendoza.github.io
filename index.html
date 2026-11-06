@@ -4,6 +4,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jhed Mendoza | Software Engineer</title>
+    <script>
+      // set the theme before first paint to avoid a light flash in dark mode
+      (function () {
+        var t = null
+        try { t = localStorage.getItem('theme') } catch (e) {}
+        if (t !== 'light' && t !== 'dark') t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.setAttribute('data-theme', t)
+      })()
+    </script>
+    <style>html[data-theme="dark"] { background: #0f1216; color-scheme: dark; }</style>
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://jhedmendoza.is-a.dev/" />

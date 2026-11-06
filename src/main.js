@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import './styles/theme.css'
+import './theme.js'
 
 // Remove legacy preloader overlay if present (some static copies include a #preloader div)
 const preloader = document.getElementById('preloader')

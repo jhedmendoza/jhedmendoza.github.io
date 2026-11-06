@@ -75,10 +75,10 @@ export default {
 
 <style>
 .work {
-  --work-ink: #272829;
-  --work-muted: #7b858f;
-  --work-rule: #e4e8ec;
-  --work-accent: #0563bb;
+  --work-ink: var(--c-ink);
+  --work-muted: var(--c-muted);
+  --work-rule: var(--c-rule);
+  --work-accent: var(--c-accent);
 }
 
 /* filters: plain text tabs with an underline for the active one */

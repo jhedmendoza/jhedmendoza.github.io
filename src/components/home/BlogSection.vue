@@ -136,10 +136,10 @@ export default {
 
 <style>
 .blog {
-  --blog-ink: #272829;
-  --blog-muted: #7b858f;
-  --blog-rule: #e4e8ec;
-  --blog-accent: #0563bb;
+  --blog-ink: var(--c-ink);
+  --blog-muted: var(--c-muted);
+  --blog-rule: var(--c-rule);
+  --blog-accent: var(--c-accent);
 }
 .blog-status { color: var(--blog-muted); }
 

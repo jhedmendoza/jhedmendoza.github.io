@@ -1,0 +1,94 @@
+/*
+ * Site colour tokens. Light is the default; dark applies when <html data-theme="dark">.
+ * data-theme is set before first paint by the inline script in index.html.
+ */
+:root {
+  color-scheme: light;
+  --c-bg: #ffffff;
+  --c-ink: #272829;
+  --c-text: #45505b;
+  --c-body: #3a4149;
+  --c-muted: #7b858f;
+  --c-rule: #e4e8ec;
+  --c-rule-strong: #d5dbe1;
+  --c-accent: #0563bb;          /* text, lines, icons */
+  --c-accent-hover: #0678e3;
+  --c-accent-solid: #0563bb;    /* filled buttons (white text on top) */
+  --c-accent-solid-hover: #0678e3;
+  --c-on-accent: #ffffff;
+  --c-error: #d64545;
+  --c-success: #1f9d6b;
+  --c-code-bg: #f3f5f7;
+  --c-pre-bg: #f6f8fa;
+  --c-topbar: rgba(255, 255, 255, 0.9);
+  --c-hero-overlay: rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --c-bg: #0f1216;
+  --c-ink: #eef1f4;
+  --c-text: #c9d1d9;
+  --c-body: #c3cad2;
+  --c-muted: #8b949e;
+  --c-rule: #262c33;
+  --c-rule-strong: #343b44;
+  --c-accent: #58a6ff;
+  --c-accent-hover: #79b8ff;
+  --c-accent-solid: #1f6feb;
+  --c-accent-solid-hover: #388bfd;
+  --c-on-accent: #ffffff;
+  --c-error: #f47067;
+  --c-success: #3fb950;
+  --c-code-bg: #1b2028;
+  --c-pre-bg: #161b22;
+  --c-topbar: rgba(15, 18, 22, 0.85);
+  --c-hero-overlay: rgba(15, 18, 22, 0.86);
+}
+
+/* smooth colour cross-fade, applied only for the moment the theme is switching
+   (so it never interferes with components' own hover/slide animations) */
+html.theme-switching body,
+html.theme-switching body *,
+html.theme-switching body *::before,
+html.theme-switching body *::after {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, fill 0.3s ease !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.theme-switching body,
+  html.theme-switching body * { transition: none !important; }
+}
+
+/* ---- overrides for the legacy template stylesheet (public/assets/css/style.css) ---- */
+body {
+  background: var(--c-bg);
+  color: var(--c-text);
+}
+#hero:before { background: var(--c-hero-overlay); }
+#hero p { color: var(--c-text); }
+#hero .social-links a { color: var(--c-text); }
+#hero .social-links a:hover { color: var(--c-accent); }
+.section-title h2 { color: var(--c-text); }
+.section-title h2::before { background: var(--c-rule-strong); }
+.section-title h2::after { background: var(--c-accent); }
+.section-title p { color: var(--c-muted); }
+.typed-cursor { color: var(--c-accent); }
+
+@media (max-width: 991px) {
+  #header {
+    background: var(--c-bg);
+    border-right-color: var(--c-rule);
+  }
+}
+
+.back-to-top { background: var(--c-accent-solid); color: var(--c-on-accent); }
+.back-to-top:hover { background: var(--c-accent-solid-hover); color: var(--c-on-accent); }
+
+.mobile-nav-toggle i { color: var(--c-text); }
+.mobile-nav-toggle:hover i,
+.mobile-nav-active .mobile-nav-toggle i { color: var(--c-accent); }
+
+/* soften bright screenshots and photos a touch in dark mode */
+:root[data-theme="dark"] .work-card-media img,
+:root[data-theme="dark"] .post-cover img { filter: brightness(0.92); }
+:root[data-theme="dark"] .hero-portrait { background: var(--c-bg); }

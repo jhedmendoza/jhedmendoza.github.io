@@ -1,24 +1,52 @@
 <template>
-  <section id="contact" class="contact">
+  <section id="contact" class="contact-section">
     <div class="container">
-      <div class="section-title"><h2>Send me a message</h2></div>
-      <div class="row mt-1">
-        <div class="col-lg-4"> <div class="info"><div class="address"><i class="icofont-google-map"></i><h4>Location:</h4><p>Bacoor Cavite, 4102</p></div><div class="email"><i class="icofont-envelope"></i><h4>Email:</h4><p>jhed.adrine@gmail.com</p></div></div></div>
-        <div class="col-lg-8 mt-5 mt-lg-0">
-          <form id="contact-form" ref="form" class="php-email-form" @submit.prevent="submitContact" novalidate>
-            <div class="form-row">
-              <div class="col-md-6 form-group"><input name="name" v-model="contact.name" type="text" class="form-control" placeholder="Your Name"/></div>
-              <div class="col-md-6 form-group"><input name="email" v-model="contact.email" type="email" class="form-control" placeholder="Your Email"/></div>
-            </div>
-            <div class="form-group"><textarea name="message" v-model="contact.message" class="form-control" rows="5" placeholder="Message"></textarea></div>
-            <div class="mb-3" v-if="contactFeedback"><div
-             :class="[
-                contactStatus === 'error' ? 'error-message' : 'sent-message',
-                contactStatus == 'success' || contactStatus == 'error' ? 'show' : 'hide'
-            ]">{{ contactFeedback }}</div></div>
-            <div><button class="btn send-btn" :disabled="contactStatus === 'sending'">{{ contactStatus==='sending' ? 'Sending...' : 'Send' }}</button></div>
-          </form>
+      <div class="contact-layout">
+        <div class="contact-intro">
+          <p class="contact-eyebrow">Contact</p>
+          <h2 class="contact-heading">Have a project in mind?<br/><span>Let's talk.</span></h2>
+          <p class="contact-lead">Tell me a little about what you need and I'll get back to you within a day or two.</p>
+
+          <ul class="contact-details">
+            <li>
+              <span class="contact-details-label">Email</span>
+              <a href="mailto:jhed.adrine@gmail.com">jhed.adrine@gmail.com</a>
+            </li>
+            <li>
+              <span class="contact-details-label">Based in</span>
+              <span>Bacoor, Cavite, Philippines</span>
+            </li>
+          </ul>
         </div>
+
+        <form id="contact-form" ref="form" class="contact-form" @submit.prevent="submitContact" novalidate>
+          <div class="contact-row">
+            <div :class="['contact-field', { filled: contact.name }]">
+              <label for="contact-name">Your name</label>
+              <input id="contact-name" name="name" v-model="contact.name" type="text" autocomplete="name"/>
+            </div>
+            <div :class="['contact-field', { filled: contact.email }]">
+              <label for="contact-email">Your email</label>
+              <input id="contact-email" name="email" v-model="contact.email" type="email" autocomplete="email"/>
+            </div>
+          </div>
+          <div :class="['contact-field', { filled: contact.message }]">
+            <label for="contact-message">Tell me about your project</label>
+            <textarea id="contact-message" name="message" v-model="contact.message" rows="4"></textarea>
+          </div>
+
+          <div class="contact-actions">
+            <button type="submit" class="contact-submit" :disabled="contactStatus === 'sending'">
+              {{ contactStatus === 'sending' ? 'Sending…' : 'Send message' }}
+            </button>
+            <Transition name="contact-fade">
+              <p v-if="contactStatus === 'success' || contactStatus === 'error'" :class="['contact-feedback', contactStatus]" role="status">
+                <i :class="['bx', contactStatus === 'success' ? 'bx-check-circle' : 'bx-error-circle']" aria-hidden="true"></i>
+                {{ contactFeedback }}
+              </p>
+            </Transition>
+          </div>
+        </form>
       </div>
     </div>
   </section>
@@ -115,11 +143,11 @@ export default {
         if (!r.ok) throw new Error('fail')
 
         this.contactStatus = 'success'
-        this.contactFeedback = 'Your message has been sent. Thank you!'
+        this.contactFeedback = "Thanks! Your message is on its way. I'll be in touch soon."
         this.contact = { name: '', email: '', message: '' }
       } catch (e) {
         this.contactStatus = 'error'
-        this.contactFeedback = 'Something went wrong. Please try again later.'
+        this.contactFeedback = 'Something went wrong. Please try again, or email me directly.'
       }
     }
   },
@@ -129,3 +157,186 @@ export default {
   }
 }
 </script>
+
+<style>
+.contact-section {
+  --contact-ink: var(--c-ink);
+  --contact-text: var(--c-text);
+  --contact-muted: var(--c-muted);
+  --contact-rule: var(--c-rule-strong);
+  --contact-accent: var(--c-accent);
+  --contact-error: var(--c-error);
+  --contact-success: var(--c-success);
+  padding: 100px 0;
+}
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 80px;
+  align-items: start;
+}
+
+/* intro column */
+.contact-eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--contact-accent);
+  margin: 0 0 14px;
+}
+.contact-heading {
+  font-family: Poppins, sans-serif;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--contact-ink);
+  margin: 0 0 18px;
+}
+.contact-heading span { color: var(--contact-accent); }
+.contact-lead {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--contact-muted);
+  margin: 0 0 36px;
+  max-width: 380px;
+}
+.contact-details {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.contact-details li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 0;
+  border-top: 1px solid var(--c-rule);
+  font-size: 15px;
+  color: var(--contact-text);
+}
+.contact-details li:last-child { border-bottom: 1px solid var(--c-rule); }
+.contact-details-label {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--contact-muted);
+}
+.contact-details a {
+  color: var(--contact-ink);
+  font-weight: 600;
+  align-self: flex-start;
+  border-bottom: 1px solid transparent;
+  transition: color 0.25s ease, border-color 0.25s ease;
+}
+.contact-details a:hover { color: var(--contact-accent); border-color: var(--contact-accent); text-decoration: none; }
+
+/* form: underline fields with floating labels */
+.contact-form { padding-top: 6px; }
+.contact-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+}
+.contact-field {
+  position: relative;
+  padding-top: 22px;
+  margin-bottom: 30px;
+}
+.contact-field label {
+  position: absolute;
+  left: 0;
+  top: 32px;
+  margin: 0;
+  font-size: 16px;
+  color: var(--contact-muted);
+  pointer-events: none;
+  transform-origin: left top;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+.contact-field:focus-within label,
+.contact-field.filled label {
+  transform: translateY(-26px) scale(0.78);
+  letter-spacing: 0.04em;
+}
+.contact-field:focus-within label { color: var(--contact-accent); }
+.contact-field input,
+.contact-field textarea {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--contact-rule);
+  border-radius: 0;
+  background: transparent;
+  padding: 8px 0 10px;
+  font-size: 16px;
+  color: var(--contact-ink);
+  outline: none;
+  box-shadow: none;
+  resize: vertical;
+  transition: border-color 0.25s ease;
+}
+.contact-field textarea { min-height: 120px; }
+.contact-field:focus-within input,
+.contact-field:focus-within textarea { border-bottom-color: var(--contact-accent); }
+
+/* validation (jQuery Validate adds .is-invalid and a .text-danger div) */
+.contact-field .is-invalid { border-bottom-color: var(--contact-error); }
+.contact-field .text-danger {
+  font-size: 12px;
+  margin-top: 6px;
+  color: var(--contact-error) !important;
+}
+
+.contact-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  margin-top: 6px;
+}
+.contact-submit {
+  border: 0;
+  padding: 13px 34px;
+  border-radius: 50px;
+  background: var(--c-accent-solid);
+  color: var(--c-on-accent);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s ease, opacity 0.25s ease;
+}
+.contact-submit:hover:not(:disabled) { background: var(--c-accent-solid-hover); }
+.contact-submit:disabled { opacity: 0.6; cursor: progress; }
+.contact-submit:focus-visible { outline: 2px solid var(--contact-accent); outline-offset: 4px; }
+
+.contact-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+}
+.contact-feedback i { font-size: 20px; }
+.contact-feedback.success { color: var(--contact-success); }
+.contact-feedback.error { color: var(--contact-error); }
+.contact-fade-enter-active,
+.contact-fade-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
+.contact-fade-enter-from,
+.contact-fade-leave-to { opacity: 0; transform: translateX(-6px); }
+
+@media (max-width: 991px) {
+  .contact-section { padding: 72px 0; }
+  .contact-layout { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+  .contact-heading { font-size: 32px; }
+}
+@media (max-width: 575px) {
+  .contact-row { grid-template-columns: minmax(0, 1fr); }
+  .contact-heading { font-size: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-field label { transition: none; }
+}
+</style>
