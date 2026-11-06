@@ -4,8 +4,8 @@
 
     <main id="main">
       <StackSection />
-      <BlogSection />
       <PortfolioSection />
+      <BlogSection />
       <ContactSection />
     </main>
   </div>

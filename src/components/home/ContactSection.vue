@@ -1,10 +1,20 @@
 <template>
-  <section id="contact" class="contact-section">
+  <section id="contact" ref="section" :class="['contact-section', { 'can-animate': canAnimate, 'is-in': inView }]">
     <div class="container">
       <div class="contact-layout">
         <div class="contact-intro">
           <p class="contact-eyebrow">Contact</p>
-          <h2 class="contact-heading">Have a project in mind?<br/><span>Let's talk.</span></h2>
+          <!-- split into letters for the type-in animation; screen readers get the plain sentence -->
+          <h2 class="contact-heading" :aria-label="headingLines.map(l => l.text).join(' ')">
+            <template v-for="(line, li) in headingLetters" :key="li">
+              <br v-if="li > 0"/>
+              <span :class="['contact-heading-line', { accent: line.accent }]" aria-hidden="true">
+                <template v-for="(word, wi) in line.words" :key="wi">
+                  <span class="contact-word"><span v-for="ch in word" :key="ch.i" class="contact-char" :style="{ '--ci': ch.i }">{{ ch.c }}</span></span>{{ wi < line.words.length - 1 ? ' ' : '' }}
+                </template>
+              </span>
+            </template>
+          </h2>
           <p class="contact-lead">Tell me a little about what you need and I'll get back to you within a day or two.</p>
 
           <ul class="contact-details">
@@ -89,7 +99,23 @@ export default {
     return {
       contact: { name: '', email: '', message: '' },
       contactStatus: 'idle',
-      contactFeedback: ''
+      contactFeedback: '',
+      headingLines: [
+        { text: 'Have a project in mind?' },
+        { text: "Let's talk.", accent: true }
+      ],
+      canAnimate: false, // only hide things once we know we can animate them back in
+      inView: false
+    }
+  },
+  computed: {
+    // [{ accent, words: [[{ c, i }]] }] with i = running letter index across the whole heading
+    headingLetters() {
+      let i = 0
+      return this.headingLines.map(line => ({
+        accent: !!line.accent,
+        words: line.text.split(' ').map(word => [...word].map(c => ({ c, i: i++ })))
+      }))
     }
   },
   methods: {
@@ -154,6 +180,19 @@ export default {
   mounted() {
     if (document.readyState === 'complete') this.loadValidator()
     else window.addEventListener('load', () => this.loadValidator(), { once: true })
+
+    // animate in whenever the section scrolls into view, and reset when it leaves
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return
+    this.canAnimate = true
+    this._observer = new IntersectionObserver(([entry]) => {
+      // never hide the form while someone is using it
+      if (!entry.isIntersecting && this.$el.contains(document.activeElement)) return
+      this.inView = entry.isIntersecting
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 })
+    this._observer.observe(this.$refs.section)
+  },
+  beforeUnmount() {
+    if (this._observer) this._observer.disconnect()
   }
 }
 </script>
@@ -195,7 +234,9 @@ export default {
   color: var(--contact-ink);
   margin: 0 0 18px;
 }
-.contact-heading span { color: var(--contact-accent); }
+.contact-heading .accent { color: var(--contact-accent); }
+.contact-word { display: inline-block; white-space: nowrap; }
+.contact-char { display: inline-block; }
 .contact-lead {
   font-size: 16px;
   line-height: 1.7;
@@ -336,6 +377,72 @@ export default {
   .contact-row { grid-template-columns: minmax(0, 1fr); }
   .contact-heading { font-size: 28px; }
 }
+/* ---- entrance animation (only once JS has added .can-animate) ---- */
+.contact-section.can-animate .contact-eyebrow,
+.contact-section.can-animate .contact-lead,
+.contact-section.can-animate .contact-details li {
+  opacity: 0;
+  translate: 0 18px;
+  transition: opacity 0.6s ease, translate 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* heading: letters rise in one by one; 'Let's talk.' letters pop up with a spring (no tilt) */
+.contact-section.can-animate .contact-char {
+  opacity: 0;
+  translate: 0 0.45em;
+  transition: opacity 0.35s ease, translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: calc(0.1s + var(--ci) * 35ms);
+}
+.contact-section.can-animate .accent .contact-char {
+  translate: 0 0.6em;
+  transition: opacity 0.35s ease, translate 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: calc(0.25s + var(--ci) * 35ms);
+}
+/* (the .accent selector is repeated so it outranks the start state above) */
+.contact-section.is-in .contact-char,
+.contact-section.is-in .accent .contact-char { opacity: 1; translate: 0 0; }
+.contact-section.can-animate .contact-lead { transition-delay: 0.85s; } /* after the heading has typed in */
+/* email / location rows slide in from the left */
+.contact-section.can-animate .contact-details li { translate: -18px 0; }
+.contact-section.can-animate .contact-details li:nth-child(1) { transition-delay: 0.95s; }
+.contact-section.can-animate .contact-details li:nth-child(2) { transition-delay: 1.05s; }
+
+/* form: each underline draws left to right, its label fades up */
+.contact-section.can-animate .contact-field input,
+.contact-section.can-animate .contact-field textarea {
+  clip-path: inset(0 100% 0 0);
+  transition: border-color 0.25s ease, clip-path 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: 0s, var(--field-delay, 0.25s);
+}
+.contact-section.can-animate .contact-field label {
+  opacity: 0;
+  translate: 0 10px;
+  transition: transform 0.25s ease, color 0.25s ease, opacity 0.5s ease, translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: 0s, 0s, var(--field-delay, 0.25s), var(--field-delay, 0.25s);
+}
+.contact-section.can-animate .contact-row .contact-field:nth-child(1) { --field-delay: 0.25s; }
+.contact-section.can-animate .contact-row .contact-field:nth-child(2) { --field-delay: 0.37s; }
+.contact-section.can-animate .contact-form > .contact-field { --field-delay: 0.49s; }
+
+/* the button springs in last */
+.contact-section.can-animate .contact-submit {
+  opacity: 0;
+  scale: 0.85;
+  translate: 0 12px;
+  transition: background 0.25s ease, opacity 0.5s ease 0.65s,
+              scale 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.65s, translate 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.65s;
+}
+
+/* in view: everything to its resting place */
+.contact-section.is-in .contact-eyebrow,
+.contact-section.is-in .contact-lead,
+.contact-section.is-in .contact-details li,
+.contact-section.is-in .contact-field label,
+.contact-section.is-in .contact-submit { opacity: 1; translate: 0 0; scale: 1; }
+.contact-section.is-in .contact-field input,
+.contact-section.is-in .contact-field textarea { clip-path: inset(0 0 0 0); }
+/* keep the dimmed look while a message is sending */
+.contact-section.is-in .contact-submit:disabled { opacity: 0.6; }
+
 @media (prefers-reduced-motion: reduce) {
   .contact-field label { transition: none; }
 }

@@ -1,15 +1,15 @@
 <template>
-  <section id="news" class="blog">
+  <section id="news" :class="['blog', { 'can-animate': canAnimate }]">
     <div class="container">
       <div class="section-title"><h2>Blog</h2></div>
       <div v-if="isLoadingPosts" class="text-center blog-status">Loading latest posts...</div>
       <div v-else-if="postsError" class="text-center text-danger">{{ postsError }}</div>
 
-      <div v-else class="blog-slider" data-aos="fade-up" data-aos-delay="100"
+      <div v-else ref="slider" :class="['blog-slider', { 'is-in': inView, 'is-paging': paging }]"
            @touchstart.passive="onTouchStart" @touchend="onTouchEnd">
         <div class="blog-slider-viewport">
           <div class="blog-slider-track" :style="{ transform: `translateX(-${page * 100}%)` }">
-            <div v-for="(post, i) in posts" :key="post.post_id" class="blog-slide" :style="{ flexBasis: 100 / perView + '%' }"
+            <div v-for="(post, i) in posts" :key="post.post_id" class="blog-slide" :style="{ flexBasis: 100 / perView + '%', '--pos': i % perView }"
                  :aria-hidden="!isVisible(i)">
               <router-link :to="{ name: 'post', params: { postId: post.post_id, slug: post.post_slug } }"
                            :tabindex="isVisible(i) ? 0 : -1" class="blog-card">
@@ -30,7 +30,7 @@
         </div>
       </div>
 
-      <div v-if="!isLoadingPosts" class="text-center">
+      <div v-if="!isLoadingPosts" :class="['text-center', 'blog-footer', { 'is-in': inView }]">
         <router-link to="/posts" class="blog-view-all">View all posts</router-link>
       </div>
     </div>
@@ -51,7 +51,10 @@ export default {
       isLoadingPosts: true,
       postsError: '',
       page: 0,
-      perView: 2
+      perView: 2,
+      canAnimate: false, // set once we know motion is OK, so cards are never hidden without JS
+      inView: false,
+      paging: false
     }
   },
   computed: {
@@ -63,9 +66,29 @@ export default {
     // keep the current page in range when the layout switches between 1 and 2 cards
     pageCount(count) {
       if (this.page > count - 1) this.page = count - 1
+    },
+    // replay the card cascade on the page you just switched to
+    page() {
+      if (!this.canAnimate) return
+      this.paging = false
+      requestAnimationFrame(() => requestAnimationFrame(() => { this.paging = true }))
+    },
+    // the slider only exists once posts have loaded: start watching it then
+    isLoadingPosts(loading) {
+      if (loading) return
+      this.$nextTick(() => this.observeSlider())
     }
   },
   methods: {
+    // cards rise in whenever the slider scrolls into view, and hide again when it leaves
+    observeSlider() {
+      if (!this.canAnimate || !this.$refs.slider || this._observer) return
+      this._observer = new IntersectionObserver(([entry]) => {
+        this.inView = entry.isIntersecting
+        if (!entry.isIntersecting) this.paging = false
+      }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 })
+      this._observer.observe(this.$refs.slider)
+    },
     prev() { if (this.page > 0) this.page-- },
     next() { if (this.page < this.pageCount - 1) this.page++ },
     isVisible(i) { return Math.floor(i / this.perView) === this.page },
@@ -123,12 +146,14 @@ export default {
     }
   },
   mounted() {
+    this.canAnimate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window
     this.updatePerView()
     window.addEventListener('resize', this.updatePerView)
     this.fetchPosts()
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.updatePerView)
+    if (this._observer) this._observer.disconnect()
   }
 }
 </script>
@@ -253,6 +278,66 @@ export default {
   .blog-slide { padding: 0 15px; }
   .blog-card-title { font-size: 20px; }
 }
+/* ---- entrance animation ----
+   --pos = the card's position on the current page (0, 1) for the left-to-right stagger */
+.blog.can-animate .blog-card {
+  border-top-color: transparent; /* the divider is drawn in by ::after instead */
+  opacity: 0;
+  translate: 0 48px;
+  transition: opacity 0.5s ease, translate 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: calc(var(--pos, 0) * 140ms);
+}
+.blog.can-animate .blog-card::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--blog-rule);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: calc(var(--pos, 0) * 140ms + 150ms);
+}
+/* date, title and excerpt follow one after another */
+/* (the third transition keeps the title's hover colour change instant) */
+.blog.can-animate .blog-card > * {
+  opacity: 0;
+  translate: 0 14px;
+  transition: opacity 0.5s ease, translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), color 0.25s ease;
+  --line-delay: calc(var(--pos, 0) * 140ms + 200ms);
+  transition-delay: var(--line-delay), var(--line-delay), 0s;
+}
+.blog.can-animate .blog-card > :nth-child(2) { --line-delay: calc(var(--pos, 0) * 140ms + 280ms); }
+.blog.can-animate .blog-card > :nth-child(3) { --line-delay: calc(var(--pos, 0) * 140ms + 360ms); }
+
+.blog-slider.is-in .blog-card { opacity: 1; translate: 0 0; }
+.blog-slider.is-in .blog-card::after { transform: scaleX(1); }
+.blog-slider.is-in .blog-card > * { opacity: 1; translate: 0 0; }
+
+/* switching pages: the new page's text cascades in again */
+.blog-slider.is-paging .blog-slide[aria-hidden="false"] .blog-card > * {
+  animation: blogLineIn 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+.blog-slider.is-paging .blog-slide[aria-hidden="false"] .blog-card > :nth-child(1) { animation-delay: calc(var(--pos, 0) * 120ms + 250ms); }
+.blog-slider.is-paging .blog-slide[aria-hidden="false"] .blog-card > :nth-child(2) { animation-delay: calc(var(--pos, 0) * 120ms + 330ms); }
+.blog-slider.is-paging .blog-slide[aria-hidden="false"] .blog-card > :nth-child(3) { animation-delay: calc(var(--pos, 0) * 120ms + 410ms); }
+@keyframes blogLineIn {
+  from { opacity: 0; translate: 0 14px; }
+  to   { opacity: 1; translate: 0 0; }
+}
+
+/* dots and 'View all posts' fade up last */
+.blog.can-animate .blog-slider-dots,
+.blog.can-animate .blog-footer {
+  opacity: 0;
+  translate: 0 12px;
+  transition: opacity 0.5s ease 0.55s, translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) 0.55s;
+}
+.blog-slider.is-in .blog-slider-dots,
+.blog.can-animate .blog-footer.is-in { opacity: 1; translate: 0 0; }
+
 @media (prefers-reduced-motion: reduce) {
   .blog-slider-track,
   .blog-card::before { transition: none; }

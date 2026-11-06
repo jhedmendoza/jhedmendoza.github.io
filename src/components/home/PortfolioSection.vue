@@ -29,6 +29,11 @@ import Isotope from 'isotope-layout'
 
 // how far (as % of the image height) a screenshot travels while its card crosses the screen
 const PARALLAX_SHIFT = 20
+// jump-in: each image starts hidden below its spot and springs into place when it scrolls into view.
+// columns start at different depths/tilts and land one after another
+const ENTER_OFFSETS = [120, 200, 160] // px below its spot
+const ENTER_TILTS = [-5, 4, -3]       // deg
+const ENTER_STAGGER = 110             // ms between columns
 
 export default {
   name: 'PortfolioSection',
@@ -62,12 +67,27 @@ export default {
         this.updateParallax()
       })
     },
+    // give each card its column's start depth, tilt and delay (before anything animates)
+    prepareCards() {
+      const gridLeft = this.$refs.grid.getBoundingClientRect().left
+      this.$el.querySelectorAll('.work-card').forEach((card) => {
+        const rect = card.getBoundingClientRect()
+        const col = Math.round((rect.left - gridLeft) / rect.width) % ENTER_OFFSETS.length
+        card.style.setProperty('--enter-offset', ENTER_OFFSETS[col] + 'px')
+        card.style.setProperty('--enter-tilt', ENTER_TILTS[col] + 'deg')
+        card.style.setProperty('--enter-delay', col * ENTER_STAGGER + 'ms')
+      })
+    },
     updateParallax() {
       const vh = window.innerHeight
-      this.$el.querySelectorAll('.work-card-media').forEach((frame) => {
-        const rect = frame.getBoundingClientRect()
-        if (rect.height === 0 || rect.bottom < 0 || rect.top > vh) return // hidden or off-screen
-        // 0 when the frame enters at the bottom, 1 when it leaves at the top
+      // measure the card (Isotope only moves it with left/top) and animate the frame inside it
+      this.$el.querySelectorAll('.work-card').forEach((card) => {
+        const rect = card.getBoundingClientRect()
+        const frame = card.firstElementChild
+        if (!frame || rect.height === 0) return
+
+        // inner parallax: the screenshot slides up inside its frame while the card crosses the screen
+        if (rect.bottom < 0 || rect.top > vh) return
         const progress = Math.min(1, Math.max(0, (vh - rect.top) / (vh + rect.height)))
         frame.style.setProperty('--parallax', (-progress * PARALLAX_SHIFT).toFixed(2) + '%')
       })
@@ -88,7 +108,24 @@ export default {
     // caption heights can change once web fonts arrive
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => this.iso && this.iso.layout())
 
-    if (this.reduced) return
+    if (this.reduced || !('IntersectionObserver' in window)) return
+
+    // images jump into place whenever they scroll into view, and drop away again when they leave
+    // (scroll back up and they disappear; scroll down again and they jump back in)
+    this.$el.classList.add('can-animate')
+    this._enterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle('is-in', entry.isIntersecting)
+      })
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 })
+    // once Isotope has positioned the cards: set their start values, then watch for them
+    requestAnimationFrame(() => {
+      this.prepareCards()
+      requestAnimationFrame(() => {
+        this.$el.querySelectorAll('.work-card').forEach(card => this._enterObserver.observe(card))
+      })
+    })
+
     window.addEventListener('scroll', this.requestParallax, { passive: true })
     window.addEventListener('resize', this.requestParallax)
     this.updateParallax()
@@ -97,6 +134,7 @@ export default {
     window.removeEventListener('scroll', this.requestParallax)
     window.removeEventListener('resize', this.requestParallax)
     cancelAnimationFrame(this._parallaxFrame)
+    if (this._enterObserver) this._enterObserver.disconnect()
     if (this.iso) { this.iso.destroy(); this.iso = null }
   }
 }
@@ -134,6 +172,23 @@ export default {
   overflow: hidden;
   border-radius: 4px;
   background: var(--work-rule);
+}
+/* jump-in: hidden below its spot while off-screen, springs into place when it scrolls into view.
+   only applies once JS has added .can-animate, so images always show without JS */
+.work.can-animate .work-card-media {
+  opacity: 0;
+  translate: 0 var(--enter-offset, 160px);
+  rotate: var(--enter-tilt, 0deg);
+  scale: 0.85;
+  transition: opacity 0.5s ease, translate 0.9s cubic-bezier(0.34, 1.56, 0.64, 1),
+              rotate 0.9s cubic-bezier(0.34, 1.56, 0.64, 1), scale 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: var(--enter-delay, 0ms);
+}
+.work.can-animate .work-card.is-in .work-card-media {
+  opacity: 1;
+  translate: 0 0;
+  rotate: 0deg;
+  scale: 1;
 }
 .work-card-media img {
   width: 100%;

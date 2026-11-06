@@ -36,8 +36,8 @@ export default {
       navItems: [
         { id: 'hero', label: 'Home', icon: 'bx-home-alt' },
         { id: 'stack', label: 'Tech Stack', icon: 'bx-layer' },
-        { id: 'news', label: 'Blog', icon: 'bx-book-open' },
         { id: 'portfolio', label: 'Portfolio', icon: 'bx-briefcase-alt-2' },
+        { id: 'news', label: 'Blog', icon: 'bx-book-open' },
         { id: 'contact', label: 'Contact', icon: 'bx-envelope' }
       ]
     }
@@ -64,7 +64,7 @@ export default {
     }
   },
   mounted() {
-    const sections = ['hero', 'stack', 'news', 'portfolio', 'contact']
+    const sections = ['hero', 'stack', 'portfolio', 'news', 'contact']
     // keep a reference so we can remove it in beforeUnmount (Vue 3 doesn't have $once)
     this._headerOnScroll = () => {
       for (const s of sections) {
