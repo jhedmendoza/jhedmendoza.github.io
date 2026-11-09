@@ -28,7 +28,7 @@
           <h2 class="posts-year-label">{{ group.year }}</h2>
           <ol class="posts-list">
             <li v-for="post in group.posts" :key="post.post_id">
-              <router-link :to="{ name: 'post', params: { postId: post.post_id, slug: post.slug } }" class="posts-item">
+              <router-link :to="{ name: 'post', params: { slug: post.slug || post.post_id } }" class="posts-item">
                 <time class="posts-item-date" :datetime="post.date">{{ post.dateLabel }}</time>
                 <div class="posts-item-body">
                   <h3 class="posts-item-title">{{ post.title }}</h3>

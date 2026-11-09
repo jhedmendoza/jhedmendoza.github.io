@@ -4,15 +4,19 @@ import Posts from '../pages/Posts.vue'
 import Post from '../pages/Post.vue'
 import PortfolioDetails from '../pages/PortfolioDetails.vue'
 import Maintenance from '../pages/Maintenance.vue'
+import NotFound from '../pages/NotFound.vue'
 
 const routes = [
   { path: '/', component: Home },
   // posts: show the header but hide the footer and the left main navigation
   { path: '/posts', component: Posts, meta: { hideFooter: true, hideMainNav: true } },
-  // individual post: hide both header and footer (legacy behaviour)
-  { path: '/post/:postId', name: 'post', component: Post, meta: { hideHeader: true, hideFooter: true } },
+  // individual post, by slug: hide both header and footer (legacy behaviour).
+  // Old numeric links (/post/123) still work; the page swaps them for the slug URL.
+  { path: '/post/:slug', name: 'post', component: Post, meta: { hideHeader: true, hideFooter: true } },
   { path: '/portfolio-details', component: PortfolioDetails },
-  { path: '/maintenance', component: Maintenance }
+  { path: '/maintenance', component: Maintenance },
+  // anything else: 404 (GitHub Pages serves index.html as 404.html, so deep links land here too)
+  { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound, meta: { hideHeader: true, hideFooter: true } }
 ]
 
 const router = createRouter({

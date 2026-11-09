@@ -4,6 +4,8 @@
 
     <div v-if="isLoading" class="post-wrap post-status">Loading post…</div>
 
+    <NotFoundContent v-else-if="notFound" kind="post" />
+
     <div v-else-if="error" class="post-wrap post-status">
       <p class="post-status-error">{{ error }}</p>
       <router-link to="/posts" class="post-link">Back to all posts</router-link>
@@ -37,7 +39,8 @@
         </div>
       </footer>
 
-      <PostComments :key="postId" :page-id="postId" />
+      <!-- threads are keyed by the numeric post ID, so they survive slug changes -->
+      <PostComments :key="post.id" :page-id="post.id" />
     </article>
   </div>
 </template>
@@ -46,20 +49,16 @@
 import axios from 'axios'
 import BlogTopbar from '../components/blog/BlogTopbar.vue'
 import PostComments from '../components/blog/PostComments.vue'
+import NotFoundContent from '../components/NotFoundContent.vue'
 
 const API = 'https://public-api.wordpress.com/rest/v1.1/sites/jhedmendoza.wordpress.com/posts/'
 const WORDS_PER_MINUTE = 200
 
 export default {
   name: 'PostPage',
-  components: { BlogTopbar, PostComments },
-  computed: {
-    postId() {
-      return String(this.$route?.params?.postId || new URLSearchParams(window.location.search).get('postId') || '')
-    }
-  },
+  components: { BlogTopbar, PostComments, NotFoundContent },
   data() {
-    return { post: null, isLoading: true, error: '', progress: 0 }
+    return { post: null, isLoading: true, error: '', notFound: false, progress: 0 }
   },
   methods: {
     stripTags(html) { const d = document.createElement('div'); d.innerHTML = html || ''; return (d.textContent || d.innerText || '').trim() },
@@ -80,11 +79,20 @@ export default {
       const end = start + el.offsetHeight - window.innerHeight
       this.progress = end <= start ? 1 : Math.min(1, Math.max(0, (window.scrollY - start) / (end - start)))
     },
-    async fetchPost(id) {
+    // ref is a slug, or a numeric ID from an old link
+    async fetchPost(ref) {
       this.isLoading = true
       this.error = ''
+      this.notFound = false
       try {
-        const { data } = await axios.get(API + encodeURIComponent(id), { timeout: 8000 })
+        const byId = /^\d+$/.test(ref)
+        const path = byId ? encodeURIComponent(ref) : 'slug:' + encodeURIComponent(ref)
+        const { data } = await axios.get(API + path, { timeout: 8000 })
+        // old numeric link: swap the address bar to the slug URL (no extra history entry, no refetch)
+        if (byId && data.slug) {
+          this._slug = data.slug
+          this.$router.replace({ name: 'post', params: { slug: data.slug }, hash: this.$route.hash })
+        }
         const date = new Date(data.date)
         const title = this.stripTags(data.title)
         const excerpt = this.stripTags(data.excerpt)
@@ -95,6 +103,7 @@ export default {
         const isAutoExcerpt = norm(text).startsWith(norm(excerpt.replace(/\s*(\[…\]|\[\.\.\.\]|…)\s*$/, '')).slice(0, 60))
 
         this.post = {
+          id: data.ID,
           title,
           excerpt: isAutoExcerpt ? '' : excerpt,
           content: data.content,
@@ -111,9 +120,15 @@ export default {
         this.setMeta('og:description', excerpt.slice(0, 160), true)
         if (data.featured_image) this.setMeta('og:image', data.featured_image, true)
       } catch (e) {
-        console.error('Post fetch error', e)
         this.post = null
-        this.error = "Sorry, this post couldn't be loaded. It may have been moved or removed."
+        // WordPress answers 404 for an unknown slug or ID: show the 404 page.
+        // Anything else (offline, timeout, server trouble) keeps the "couldn't load" message.
+        if (e.response && e.response.status === 404) {
+          this.notFound = true
+        } else {
+          console.error('Post fetch error', e)
+          this.error = "Sorry, this post couldn't be loaded. Please check your connection and try again."
+        }
       } finally {
         this.isLoading = false
         await this.$nextTick()
@@ -126,9 +141,9 @@ export default {
     window.addEventListener('scroll', this.updateProgress, { passive: true })
     window.addEventListener('resize', this.updateProgress)
 
-    // route param (SPA) with fallback to the legacy ?postId= query
-    const id = this.$route?.params?.postId || new URLSearchParams(window.location.search).get('postId')
-    if (id) this.fetchPost(id)
+    // route param (slug, or an old numeric ID) with fallback to the legacy ?postId= query
+    const ref = this.$route?.params?.slug || new URLSearchParams(window.location.search).get('postId')
+    if (ref) this.fetchPost(ref)
     else { this.error = 'No post specified.'; this.isLoading = false }
   },
   beforeUnmount() {
@@ -138,8 +153,10 @@ export default {
   },
   watch: {
     // react to route changes when navigating between posts
-    '$route.params.postId'(newId, oldId) {
-      if (newId && newId !== oldId) this.fetchPost(newId)
+    '$route.params.slug'(slug, old) {
+      // skip the swap from an old numeric link to its slug: that post is already loaded
+      if (slug === this._slug) { this._slug = null; return }
+      if (slug && slug !== old) this.fetchPost(slug)
     }
   }
 }

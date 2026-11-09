@@ -131,12 +131,8 @@ export default {
 .hero-theme .theme-toggle {
   width: 42px;
   height: 42px;
-  border: 1px solid var(--hero-rule);
-  border-radius: 50%;
-  background: var(--c-bg);
 }
 .hero-theme .theme-toggle i { font-size: 20px; }
-.hero-theme .theme-toggle:hover { border-color: var(--c-accent); }
 
 .hero-portrait {
   flex-shrink: 0;

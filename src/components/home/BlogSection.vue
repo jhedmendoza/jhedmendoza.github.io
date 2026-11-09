@@ -11,7 +11,7 @@
           <div class="blog-slider-track" :style="{ transform: `translateX(-${page * 100}%)` }">
             <div v-for="(post, i) in posts" :key="post.post_id" class="blog-slide" :style="{ flexBasis: 100 / perView + '%', '--pos': i % perView }"
                  :aria-hidden="!isVisible(i)">
-              <router-link :to="{ name: 'post', params: { postId: post.post_id, slug: post.post_slug } }"
+              <router-link :to="{ name: 'post', params: { slug: post.post_slug || post.post_id } }"
                            :tabindex="isVisible(i) ? 0 : -1" class="blog-card">
                 <p class="blog-card-meta">
                   <time :datetime="post.post_date">{{ post.post_date_label }}</time>
