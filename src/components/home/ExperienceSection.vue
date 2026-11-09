@@ -3,12 +3,38 @@
     <div class="container">
       <div class="section-title"><h2>Experience</h2><p>Where I've worked over the years</p></div>
 
+      <!-- career at a glance: one segment per company stint, overlapping stints get their own lane -->
+      <div ref="bar" :class="['exp-bar', { 'is-in': barIn }]" @mouseleave="barHover = null">
+        <p class="exp-bar-caption">
+          <template v-if="activeGroup">
+            <strong>{{ activeGroup.company }}</strong>{{ ' ' }}<span>· {{ range(activeGroup) }} · {{ duration(activeGroup) }}</span>
+          </template>
+        </p>
+        <div class="exp-bar-lanes" :style="{ '--lanes': laneCount }">
+          <span class="exp-bar-track" aria-hidden="true"></span>
+          <button v-for="g in groups" :key="g.first" type="button"
+                  :class="['exp-bar-seg', { 'is-active': activeGroup === g, 'is-current': !g.end }]"
+                  :style="{ left: g.left + '%', width: g.width + '%', '--lane': g.lane, transitionDelay: barIn && !barSettled ? g.left * 9 + 'ms' : '0ms' }"
+                  :aria-label="`${g.company}, ${range(g)}. Show in timeline`"
+                  @mouseenter="barHover = g" @focus="barHover = g" @blur="barHover = null"
+                  @click="goTo(g)"></button>
+        </div>
+        <div class="exp-bar-axis" aria-hidden="true">
+          <span v-for="t in ticks" :key="t.label" :style="{ left: t.left + '%' }">{{ t.label }}</span>
+        </div>
+      </div>
+
       <div ref="timeline" class="exp-timeline">
         <!-- the rail, and the blue line that fills down it as you scroll -->
         <div class="exp-rail" aria-hidden="true"><span class="exp-rail-fill" :style="{ transform: `scaleY(${progress})` }"></span></div>
 
         <article v-for="(job, i) in jobs" :key="job.company + job.start" ref="entries"
-                 :class="['exp-entry', { 'is-current': !job.end, 'is-in': visible[i], 'same-company': job.continues }]">
+                 :class="['exp-entry', {
+                   'is-current': !job.end, 'is-in': visible[i], 'same-company': job.continues,
+                   'is-linked': activeGroup && groupOf[i] === activeGroup,
+                   'is-dimmed': barHover && groupOf[i] !== barHover
+                 }]"
+                 @mouseenter="entryHover = groupOf[i]" @mouseleave="entryHover = null">
           <div class="exp-when">
             <p class="exp-dates">
               <time :datetime="job.start">{{ formatDate(job.start) }}</time> –
@@ -123,6 +149,60 @@ const JOBS = [
   }
 ]
 
+const toDate = (iso) => new Date(iso + 'T00:00:00')
+// where a role ends on the bar: month-only dates run to the end of that month; current roles run to today
+const endOf = ({ end, monthOnly }) => {
+  if (!end) return new Date()
+  const d = toDate(end)
+  return monthOnly ? new Date(d.getFullYear(), d.getMonth() + 1, 1) : d
+}
+
+// one group per company stint: a role plus the `continues` roles that follow it
+function buildCareer(jobs) {
+  const groups = []
+  const groupOf = jobs.map((job, i) => {
+    const prev = groups[groups.length - 1]
+    if (job.continues && prev) {
+      if (job.start < prev.start) prev.start = job.start
+      if (!job.end || !prev.end) prev.end = null
+      else if (job.end > prev.end) prev.end = job.end
+      return prev
+    }
+    const g = { first: i, company: job.company, start: job.start, end: job.end, monthOnly: job.monthOnly }
+    groups.push(g)
+    return g
+  })
+
+  const from = Math.min(...groups.map(g => toDate(g.start)))
+  const span = Date.now() - from
+  const pct = (d) => ((d - from) / span) * 100
+
+  // oldest first; a stint that overlaps an earlier one drops to the next free lane
+  const laneEnds = []
+  ;[...groups].sort((a, b) => (a.start < b.start ? -1 : 1)).forEach((g) => {
+    const s = toDate(g.start), e = endOf(g)
+    let lane = laneEnds.findIndex(end => end <= s)
+    if (lane === -1) lane = laneEnds.length
+    laneEnds[lane] = e
+    g.lane = lane
+    g.left = pct(s)
+    g.width = Math.max(0.6, pct(e) - g.left)
+  })
+
+  // year labels every 3 years from the first one, then "Now" (skipping a year that would crowd it)
+  const firstYear = new Date(from).getFullYear()
+  const ticks = []
+  for (let y = firstYear; y <= new Date().getFullYear(); y += 3) {
+    const left = Math.max(0, pct(new Date(y, 0, 1)))
+    if (100 - left > 9) ticks.push({ label: String(y), left })
+  }
+  ticks.push({ label: 'Now', left: 100 })
+
+  return { groups, groupOf, ticks, laneCount: laneEnds.length }
+}
+
+const CAREER = buildCareer(JOBS)
+
 export default {
   name: 'ExperienceSection',
   data() {
@@ -130,10 +210,36 @@ export default {
       jobs: JOBS,
       visible: JOBS.map(() => false),
       progress: 0,
-      canAnimate: false
+      canAnimate: false,
+      groups: CAREER.groups,
+      groupOf: CAREER.groupOf,
+      ticks: CAREER.ticks,
+      laneCount: CAREER.laneCount,
+      barIn: false,
+      barSettled: false,
+      barHover: null,   // stint hovered/focused on the bar: dims the other roles
+      entryHover: null  // role hovered in the timeline: lights up its stint on the bar
+    }
+  },
+  computed: {
+    activeGroup() {
+      return this.barHover || this.entryHover
     }
   },
   methods: {
+    range(g) {
+      return `${this.formatDate(g.start)} – ${g.end ? this.formatDate(g.end) : 'Present'}`
+    },
+    goTo(g) {
+      const el = this.$refs.entries[g.first]
+      if (!el) return
+      const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      el.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'center' })
+      // keep the highlight long enough to land on it (touch has no hover to clear it)
+      this.barHover = g
+      clearTimeout(this._clearHover)
+      this._clearHover = setTimeout(() => { if (this.barHover === g) this.barHover = null }, 1600)
+    },
     formatDate(iso) {
       return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
     },
@@ -167,18 +273,28 @@ export default {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
       this.visible = this.jobs.map(() => true)
       this.progress = 1
+      this.barIn = this.barSettled = true
       return
     }
     this.canAnimate = true
 
-    // each role animates in when it scrolls into view, and resets when it leaves
+    // each role animates in when it scrolls into view, and resets when it leaves;
+    // the career bar draws in once, the first time it's seen
     this._observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
+        if (entry.target === this.$refs.bar) {
+          if (entry.isIntersecting && !this.barIn) {
+            this.barIn = true
+            this._settle = setTimeout(() => { this.barSettled = true }, 1600)
+          }
+          return
+        }
         const i = this.$refs.entries.indexOf(entry.target)
         if (i > -1) this.visible[i] = entry.isIntersecting
       })
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.2 })
     this.$refs.entries.forEach(el => this._observer.observe(el))
+    this._observer.observe(this.$refs.bar)
 
     window.addEventListener('scroll', this.requestProgress, { passive: true })
     window.addEventListener('resize', this.requestProgress)
@@ -189,6 +305,8 @@ export default {
     window.removeEventListener('scroll', this.requestProgress)
     window.removeEventListener('resize', this.requestProgress)
     cancelAnimationFrame(this._frame)
+    clearTimeout(this._settle)
+    clearTimeout(this._clearHover)
   }
 }
 </script>
@@ -200,11 +318,85 @@ export default {
   padding: 60px 0;
 }
 
+/* ---- career bar ---- */
+.exp-bar {
+  --seg-h: 6px;
+  --seg-gap: 5px;
+  max-width: 920px;
+  margin: 0 auto 64px;
+}
+.exp-bar-caption {
+  font-size: 14px;
+  color: var(--c-muted);
+  margin: 0 0 14px;
+  min-height: 1.6em;
+  line-height: 1.6;
+}
+.exp-bar-caption strong { font-weight: 600; color: var(--c-accent); }
+.exp-bar-lanes {
+  position: relative;
+  height: calc(var(--lanes) * var(--seg-h) + (var(--lanes) - 1) * var(--seg-gap));
+}
+.exp-bar-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--seg-h) / 2);
+  height: 1px;
+  background: var(--c-rule);
+}
+.exp-bar-seg {
+  position: absolute;
+  top: calc(var(--lane) * (var(--seg-h) + var(--seg-gap)));
+  height: var(--seg-h);
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: var(--c-accent);
+  opacity: 0.35;
+  cursor: pointer;
+  transform-origin: left;
+  transition: opacity 0.25s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+/* a taller, invisible hit area so the thin bar is easy to point at */
+.exp-bar-seg::before {
+  content: '';
+  position: absolute;
+  inset: -9px 0;
+}
+.exp-bar-seg.is-current { opacity: 0.6; }
+.exp-bar-seg.is-active { opacity: 1; }
+.exp-bar-seg:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
+.exp.can-animate .exp-bar-seg { transform: scaleX(0); }
+.exp.can-animate .exp-bar.is-in .exp-bar-seg { transform: scaleX(1); }
+
+.exp-bar-axis {
+  position: relative;
+  height: 18px;
+  margin-top: 10px;
+}
+.exp-bar-axis span {
+  position: absolute;
+  top: 0;
+  translate: -50% 0;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--c-muted);
+  white-space: nowrap;
+}
+.exp-bar-axis span:first-child { translate: 0 0; }
+.exp-bar-axis span:last-child { translate: -100% 0; }
+
 .exp-timeline {
   position: relative;
   max-width: 920px;
   margin: 0 auto;
 }
+
+/* linking the bar and the timeline */
+.exp-entry { transition: opacity 0.3s ease; }
+.exp-entry.is-dimmed { opacity: 0.3; }
+.exp-entry.is-linked .exp-dot { background: var(--c-accent); }
 
 /* vertical rail sits in the middle of the rail column */
 .exp-rail {
@@ -333,10 +525,13 @@ export default {
   .exp-body { grid-area: body; }
   .exp-role { font-size: 17px; }
   .exp-summary { font-size: 14px; }
+  .exp-bar { margin-bottom: 48px; }
+  .exp-bar-caption { min-height: 3.2em; } /* long company names wrap to two lines */
   .exp.can-animate .exp-when { translate: 24px 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .exp-entry.is-current .exp-dot::after { animation: none; }
+  .exp-bar-seg, .exp-entry { transition: none; }
 }
 </style>

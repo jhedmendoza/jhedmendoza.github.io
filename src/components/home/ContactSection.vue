@@ -4,13 +4,13 @@
       <div class="contact-layout">
         <div class="contact-intro">
           <p class="contact-eyebrow">Contact</p>
-          <!-- split into letters for the type-in animation; screen readers get the plain sentence -->
+          <!-- split into words for the masked reveal; screen readers get the plain sentence -->
           <h2 class="contact-heading" :aria-label="headingLines.map(l => l.text).join(' ')">
-            <template v-for="(line, li) in headingLetters" :key="li">
+            <template v-for="(line, li) in headingWords" :key="li">
               <br v-if="li > 0"/>
               <span :class="['contact-heading-line', { accent: line.accent }]" aria-hidden="true">
                 <template v-for="(word, wi) in line.words" :key="wi">
-                  <span class="contact-word"><span v-for="ch in word" :key="ch.i" class="contact-char" :style="{ '--ci': ch.i }">{{ ch.c }}</span></span>{{ wi < line.words.length - 1 ? ' ' : '' }}
+                  <span class="contact-word"><span class="contact-word-inner" :style="{ '--wi': word.i }">{{ word.text }}</span></span>{{ wi < line.words.length - 1 ? ' ' : '' }}
                 </template>
               </span>
             </template>
@@ -109,12 +109,12 @@ export default {
     }
   },
   computed: {
-    // [{ accent, words: [[{ c, i }]] }] with i = running letter index across the whole heading
-    headingLetters() {
+    // [{ accent, words: [{ text, i }] }] with i = running word index across the whole heading
+    headingWords() {
       let i = 0
       return this.headingLines.map(line => ({
         accent: !!line.accent,
-        words: line.text.split(' ').map(word => [...word].map(c => ({ c, i: i++ })))
+        words: line.text.split(' ').map(text => ({ text, i: i++ }))
       }))
     }
   },
@@ -235,8 +235,32 @@ export default {
   margin: 0 0 18px;
 }
 .contact-heading .accent { color: var(--contact-accent); }
-.contact-word { display: inline-block; white-space: nowrap; }
-.contact-char { display: inline-block; }
+/* 'Let's talk.' carries an accent underline (drawn in by the entrance animation) */
+.contact-heading-line.accent {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 6px;
+}
+.contact-heading-line.accent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--contact-accent);
+}
+/* each word sits in a mask; the inner span rises up from behind its baseline.
+   The padding/negative-margin pair gives descenders (j, p, ?) room inside the mask. */
+.contact-word {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0 0.04em 0.16em;
+  margin: 0 -0.04em -0.16em;
+}
+.contact-word-inner { display: inline-block; }
 .contact-lead {
   font-size: 16px;
   line-height: 1.7;
@@ -385,26 +409,29 @@ export default {
   translate: 0 18px;
   transition: opacity 0.6s ease, translate 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
-/* heading: letters rise in one by one; 'Let's talk.' letters pop up with a spring (no tilt) */
-.contact-section.can-animate .contact-char {
-  opacity: 0;
-  translate: 0 0.45em;
-  transition: opacity 0.35s ease, translate 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-  transition-delay: calc(0.1s + var(--ci) * 35ms);
+/* heading: each word rises out of its mask, one after another;
+   'Let's talk.' follows after a short beat, then its underline draws left to right */
+.contact-section.can-animate .contact-word-inner {
+  translate: 0 110%;
+  transition: translate 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: calc(0.1s + var(--wi) * 70ms);
 }
-.contact-section.can-animate .accent .contact-char {
-  translate: 0 0.6em;
-  transition: opacity 0.35s ease, translate 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-  transition-delay: calc(0.25s + var(--ci) * 35ms);
+.contact-section.can-animate .accent .contact-word-inner {
+  transition-delay: calc(0.25s + var(--wi) * 70ms);
+}
+.contact-section.can-animate .contact-heading-line.accent::after {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.9s;
 }
 /* (the .accent selector is repeated so it outranks the start state above) */
-.contact-section.is-in .contact-char,
-.contact-section.is-in .accent .contact-char { opacity: 1; translate: 0 0; }
-.contact-section.can-animate .contact-lead { transition-delay: 0.85s; } /* after the heading has typed in */
+.contact-section.is-in .contact-word-inner,
+.contact-section.is-in .accent .contact-word-inner { translate: 0 0; }
+.contact-section.is-in .contact-heading-line.accent::after { clip-path: inset(0 0 0 0); }
+.contact-section.can-animate .contact-lead { transition-delay: 0.7s; } /* as the last words land */
 /* email / location rows slide in from the left */
 .contact-section.can-animate .contact-details li { translate: -18px 0; }
-.contact-section.can-animate .contact-details li:nth-child(1) { transition-delay: 0.95s; }
-.contact-section.can-animate .contact-details li:nth-child(2) { transition-delay: 1.05s; }
+.contact-section.can-animate .contact-details li:nth-child(1) { transition-delay: 0.85s; }
+.contact-section.can-animate .contact-details li:nth-child(2) { transition-delay: 0.95s; }
 
 /* form: each underline draws left to right, its label fades up */
 .contact-section.can-animate .contact-field input,

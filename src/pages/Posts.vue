@@ -272,14 +272,14 @@ export default {
   width: 100%;
   height: 1px;
   background: var(--posts-accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.45s ease;
+  /* revealed with clip-path, not scaleX: a transformed 1px line gets resampled and looks thinner */
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.45s ease;
 }
 .posts-item:hover,
 .posts-item:focus-visible { color: var(--posts-text); text-decoration: none; }
 .posts-item:hover::before,
-.posts-item:focus-visible::before { transform: scaleX(1); }
+.posts-item:focus-visible::before { clip-path: inset(0 0 0 0); }
 .posts-item:focus-visible { outline: 2px solid var(--posts-accent); outline-offset: 4px; }
 
 .posts-item-date {

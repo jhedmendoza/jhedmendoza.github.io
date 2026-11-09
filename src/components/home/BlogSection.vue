@@ -201,14 +201,15 @@ export default {
   width: 100%;
   height: 1px;
   background: var(--blog-accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.45s ease;
+  /* revealed with clip-path, not scaleX: a transformed 1px line gets resampled and looks thinner */
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.45s ease;
+  z-index: 1; /* stay above the grey divider (::after), which paints later at the same spot */
 }
 .blog-card:hover,
 .blog-card:focus-visible { color: var(--blog-ink); text-decoration: none; }
 .blog-card:hover::before,
-.blog-card:focus-visible::before { transform: scaleX(1); }
+.blog-card:focus-visible::before { clip-path: inset(0 0 0 0); }
 .blog-card:focus-visible { outline: 2px solid var(--blog-accent); outline-offset: 6px; }
 
 .blog-card-meta {
