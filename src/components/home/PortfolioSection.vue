@@ -150,7 +150,13 @@ export default {
   --work-cols: 3;
 }
 @media (max-width: 991px) { .work { --work-cols: 2; } }
-@media (max-width: 575px) { .work { --work-cols: 1; --work-gap: 12px; } }
+/* mobile: smaller 2-up grid, every card the same width and height */
+@media (max-width: 575px) {
+  .work { --work-cols: 2; --work-gap: 10px; }
+  .work .work-card-media { aspect-ratio: 4 / 3 !important; }
+  .work .work-card-caption { padding: 28px 10px 8px; }
+  .work .work-card-title { font-size: 12px; }
+}
 
 /* masonry grid (Isotope): column width + gutter come from these two hidden elements */
 .work-grid { position: relative; }
