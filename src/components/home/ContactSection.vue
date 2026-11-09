@@ -421,12 +421,17 @@ export default {
 }
 .contact-section.can-animate .contact-heading-line.accent::after {
   clip-path: inset(0 100% 0 0);
-  transition: clip-path 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.9s;
+  /* leaving view: retract straight away, alongside the words */
+  transition: clip-path 0.35s cubic-bezier(0.65, 0, 0.35, 1) 0s;
 }
 /* (the .accent selector is repeated so it outranks the start state above) */
 .contact-section.is-in .contact-word-inner,
 .contact-section.is-in .accent .contact-word-inner { translate: 0 0; }
-.contact-section.is-in .contact-heading-line.accent::after { clip-path: inset(0 0 0 0); }
+/* entering view: draw in once the words have landed */
+.contact-section.is-in .contact-heading-line.accent::after {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.9s;
+}
 .contact-section.can-animate .contact-lead { transition-delay: 0.7s; } /* as the last words land */
 /* email / location rows slide in from the left */
 .contact-section.can-animate .contact-details li { translate: -18px 0; }

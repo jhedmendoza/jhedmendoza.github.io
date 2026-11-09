@@ -9,6 +9,7 @@
           <template v-if="activeGroup">
             <strong>{{ activeGroup.company }}</strong>{{ ' ' }}<span>· {{ range(activeGroup) }} · {{ duration(activeGroup) }}</span>
           </template>
+          <template v-else>{{ yearsLabel }}</template>
         </p>
         <div class="exp-bar-lanes" :style="{ '--lanes': laneCount }">
           <span class="exp-bar-track" aria-hidden="true"></span>
@@ -198,7 +199,7 @@ function buildCareer(jobs) {
   }
   ticks.push({ label: 'Now', left: 100 })
 
-  return { groups, groupOf, ticks, laneCount: laneEnds.length }
+  return { groups, groupOf, ticks, laneCount: laneEnds.length, from }
 }
 
 const CAREER = buildCareer(JOBS)
@@ -224,6 +225,13 @@ export default {
   computed: {
     activeGroup() {
       return this.barHover || this.entryHover
+    },
+    // whole years since the first role started, e.g. "15 years of experience"
+    yearsLabel() {
+      const from = new Date(CAREER.from), now = new Date()
+      let years = now.getFullYear() - from.getFullYear()
+      if (now.getMonth() < from.getMonth() || (now.getMonth() === from.getMonth() && now.getDate() < from.getDate())) years--
+      return `${years} year${years === 1 ? '' : 's'} of experience`
     }
   },
   methods: {
