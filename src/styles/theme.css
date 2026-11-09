@@ -20,6 +20,16 @@
   --c-success: #1f9d6b;
   --c-code-bg: #f3f5f7;
   --c-pre-bg: #f6f8fa;
+  /* syntax highlighting in blog code blocks */
+  --c-syn-text: #24292f;
+  --c-syn-comment: #6e7781;
+  --c-syn-keyword: #cf222e;
+  --c-syn-string: #0a3069;
+  --c-syn-number: #0550ae;
+  --c-syn-function: #8250df;
+  --c-syn-type: #953800;
+  --c-syn-attr: #0550ae;
+  --c-syn-tag: #116329;
   --c-topbar: rgba(255, 255, 255, 0.9);
   --c-hero-overlay: rgba(255, 255, 255, 0.8);
 }
@@ -42,6 +52,15 @@
   --c-success: #3fb950;
   --c-code-bg: #1b2028;
   --c-pre-bg: #161b22;
+  --c-syn-text: #e6edf3;
+  --c-syn-comment: #8b949e;
+  --c-syn-keyword: #ff7b72;
+  --c-syn-string: #a5d6ff;
+  --c-syn-number: #79c0ff;
+  --c-syn-function: #d2a8ff;
+  --c-syn-type: #ffa657;
+  --c-syn-attr: #79c0ff;
+  --c-syn-tag: #7ee787;
   --c-topbar: rgba(15, 18, 22, 0.85);
   --c-hero-overlay: rgba(15, 18, 22, 0.86);
 }

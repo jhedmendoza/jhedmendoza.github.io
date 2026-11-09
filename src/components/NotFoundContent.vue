@@ -1,61 +1,43 @@
 <template>
   <section :class="['nf', { 'is-tracking': tracking }]" :style="{ '--lx': look.x + 'px', '--ly': look.y + 'px' }" aria-labelledby="nf-title">
-    <!-- a little line-drawn robot, hovering and searching with a magnifying glass -->
-    <svg class="nf-robot" viewBox="0 0 260 220" role="img" aria-label="A small robot searching with a magnifying glass">
+    <!-- a little line-drawn drone, hovering with a swinging "404" sign -->
+    <svg class="nf-robot" viewBox="0 0 260 220" role="img" aria-label="A small drone carrying a sign that says 404 not found">
       <line class="nf-floor" x1="50" y1="204" x2="210" y2="204"/>
 
       <g class="nf-bob">
-        <!-- antenna -->
-        <line x1="130" y1="40" x2="130" y2="24"/>
-        <circle class="nf-bulb" cx="130" cy="19" r="4.5"/>
+        <g class="nf-tilt">
+          <!-- arms, rotor masts and spinning propellers -->
+          <line x1="104" y1="62" x2="80" y2="52"/>
+          <line x1="156" y1="62" x2="180" y2="52"/>
+          <line x1="80" y1="52" x2="80" y2="45"/>
+          <line x1="180" y1="52" x2="180" y2="45"/>
+          <line class="nf-prop" x1="64" y1="44" x2="96" y2="44"/>
+          <line class="nf-prop" x1="164" y1="44" x2="196" y2="44"/>
 
-        <!-- head + visor -->
-        <rect ref="head" x="94" y="40" width="72" height="50" rx="14"/>
-        <rect class="nf-visor" x="105" y="52" width="50" height="25" rx="12.5"/>
-        <g class="nf-look">
-          <g class="nf-eyes">
-            <circle class="nf-eye" cx="121" cy="64.5" r="3.6"/>
-            <circle class="nf-eye" cx="139" cy="64.5" r="3.6"/>
+          <!-- the sign, hanging on two strings and swinging a beat behind the drone -->
+          <g class="nf-sign">
+            <line x1="114" y1="76" x2="104" y2="120"/>
+            <line x1="146" y1="76" x2="156" y2="120"/>
+            <rect class="nf-solid" x="90" y="120" width="80" height="44" rx="4"/>
+            <text class="nf-404" x="130" y="146" text-anchor="middle">404</text>
+            <text class="nf-sub" x="130" y="157" text-anchor="middle">NOT FOUND</text>
+          </g>
+
+          <!-- body + eyes -->
+          <rect ref="head" class="nf-solid" x="104" y="56" width="52" height="22" rx="11"/>
+          <g class="nf-look">
+            <g class="nf-eyes">
+              <circle class="nf-eye" cx="122" cy="67" r="2.8"/>
+              <circle class="nf-eye" cx="138" cy="67" r="2.8"/>
+            </g>
           </g>
         </g>
-
-        <!-- neck + body -->
-        <line x1="130" y1="90" x2="130" y2="98"/>
-        <rect x="100" y="98" width="60" height="54" rx="12"/>
-        <line class="nf-faint" x1="114" y1="134" x2="146" y2="134"/>
-        <line class="nf-faint" x1="114" y1="141" x2="136" y2="141"/>
-        <circle class="nf-core" cx="130" cy="117" r="5"/>
-
-        <!-- left arm, resting -->
-        <path d="M100 110 q-18 6 -17 30"/>
-        <circle cx="83" cy="143" r="3"/>
-
-        <!-- right arm with the magnifying glass, sweeping back and forth -->
-        <g class="nf-arm">
-          <path d="M160 110 q20 -2 25 -22"/>
-          <line x1="186" y1="86" x2="193" y2="75"/>
-          <circle class="nf-lens" cx="201" cy="62" r="13"/>
-          <path class="nf-faint" d="M194 57 a8 8 0 0 1 7 -5"/>
-        </g>
-
-        <!-- hover jets -->
-        <g class="nf-jets">
-          <line x1="120" y1="160" x2="120" y2="170"/>
-          <line x1="130" y1="160" x2="130" y2="176"/>
-          <line x1="140" y1="160" x2="140" y2="170"/>
-        </g>
       </g>
-
-      <!-- question marks drifting up from the lens -->
-      <text class="nf-q nf-q1" x="214" y="44">?</text>
-      <text class="nf-q nf-q2" x="226" y="58">?</text>
     </svg>
 
     <div class="nf-text">
-      <p class="nf-eyebrow">Error 404</p>
       <h1 id="nf-title" class="nf-title">{{ copy.title }}</h1>
       <p class="nf-lead">{{ copy.lead }}</p>
-      <p class="nf-path"><code>{{ path }}</code></p>
       <div class="nf-links">
         <router-link v-for="l in copy.links" :key="l.to" :to="l.to" class="nf-link">{{ l.label }}</router-link>
       </div>
@@ -67,18 +49,18 @@
 const COPY = {
   page: {
     title: 'This page wandered off.',
-    lead: "My robot searched everywhere, but there's nothing here. The link may be broken, or the page may have moved.",
+    lead: "My drone searched everywhere, but there's nothing here. The link may be broken, or the page may have moved.",
     links: [{ to: '/', label: 'Back to home' }, { to: '/posts', label: 'Read the blog' }]
   },
   post: {
     title: "This post doesn't exist.",
-    lead: "My robot searched the whole blog and came back empty-handed. It may have been renamed or removed.",
+    lead: "My drone searched the whole blog and came back empty-handed. It may have been renamed or removed.",
     links: [{ to: '/posts', label: 'Browse all posts' }, { to: '/', label: 'Back to home' }]
   }
 }
-// how far the eyes can move inside the visor
-const LOOK_X = 5
-const LOOK_Y = 3
+// how far the eyes can move inside the drone's body
+const LOOK_X = 4
+const LOOK_Y = 2
 
 export default {
   name: 'NotFoundContent',
@@ -90,11 +72,10 @@ export default {
     return { look: { x: 0, y: 0 }, tracking: false }
   },
   computed: {
-    copy() { return COPY[this.kind] || COPY.page },
-    path() { return this.$route ? this.$route.fullPath : window.location.pathname }
+    copy() { return COPY[this.kind] || COPY.page }
   },
   methods: {
-    // the robot's eyes follow the pointer; after a pause it goes back to looking around
+    // the drone's eyes follow the pointer; after a pause it goes back to looking around
     onMove(e) {
       this._pointer = { x: e.clientX, y: e.clientY }
       if (this._frame) return
@@ -145,7 +126,7 @@ export default {
   text-align: center;
 }
 
-/* ---- robot ---- */
+/* ---- drone ---- */
 .nf-robot {
   display: block;
   width: 100%;
@@ -158,55 +139,54 @@ export default {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.nf-robot .nf-faint { stroke: var(--c-muted); stroke-width: 1.2; }
+.nf-robot .nf-solid { fill: var(--c-bg); }
 .nf-robot .nf-floor { stroke: var(--c-rule-strong); stroke-width: 1; }
-.nf-robot .nf-visor { stroke: var(--c-muted); }
-.nf-robot .nf-eye,
-.nf-robot .nf-bulb,
-.nf-robot .nf-core { fill: var(--c-accent); stroke: none; }
-.nf-robot .nf-lens { stroke: var(--c-accent); }
-.nf-robot .nf-jets line { stroke: var(--c-accent); stroke-width: 1.2; stroke-dasharray: 2 3; }
-.nf-robot .nf-q {
-  fill: var(--c-accent);
-  stroke: none;
-  font: 600 15px Poppins, sans-serif;
-}
+.nf-robot .nf-eye { fill: var(--c-accent); stroke: none; }
+.nf-robot .nf-prop { stroke: var(--c-accent); }
+.nf-robot text { stroke: none; }
+.nf-robot .nf-404 { fill: var(--c-ink); font: 600 19px Poppins, sans-serif; letter-spacing: 0.06em; }
+.nf-robot .nf-sub { fill: var(--c-muted); font: 600 7.5px 'Open Sans', sans-serif; letter-spacing: 0.16em; }
 
 /* everything that moves transforms around its own box unless told otherwise */
 .nf-robot g,
 .nf-robot circle,
-.nf-robot text { transform-box: fill-box; transform-origin: center; }
+.nf-robot line { transform-box: fill-box; transform-origin: center; }
 
 /* hover up and down */
-.nf-bob { animation: nf-bob 3.2s ease-in-out infinite; }
+.nf-bob { animation: nf-bob 3s ease-in-out infinite; }
 @keyframes nf-bob {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-9px); }
 }
 
-/* antenna light: two quick blinks, then a pause */
-.nf-bulb { animation: nf-bulb 2.6s ease-in-out infinite; }
-@keyframes nf-bulb {
-  0%, 30%, 100% { opacity: 1; }
-  10%, 20% { opacity: 0.2; }
-}
-
-/* chest core breathes */
-.nf-core { animation: nf-core 2.4s ease-in-out infinite; }
-@keyframes nf-core {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(0.7); opacity: 0.55; }
-}
-
-/* the magnifying-glass arm sweeps from the shoulder */
-.nf-robot .nf-arm {
+/* the whole drone rocks gently around its body */
+.nf-robot .nf-tilt {
   transform-box: view-box;
-  transform-origin: 160px 110px;
-  animation: nf-sweep 3.6s ease-in-out infinite;
+  transform-origin: 130px 67px;
+  animation: nf-tilt 4s ease-in-out infinite;
 }
-@keyframes nf-sweep {
-  0%, 100% { transform: rotate(-7deg); }
-  50% { transform: rotate(9deg); }
+@keyframes nf-tilt {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* the sign swings from its strings, a beat behind the drone */
+.nf-robot .nf-sign {
+  transform-box: view-box;
+  transform-origin: 130px 78px;
+  animation: nf-swing 4s ease-in-out infinite;
+  animation-delay: -0.6s;
+}
+@keyframes nf-swing {
+  0%, 100% { transform: rotate(4deg); }
+  50% { transform: rotate(-4deg); }
+}
+
+/* propellers whirr: squash them flat and back, fast */
+.nf-prop { animation: nf-spin 0.14s linear infinite alternate; }
+@keyframes nf-spin {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0.15); }
 }
 
 /* eyes: follow the pointer when there is one, otherwise glance around */
@@ -218,8 +198,8 @@ export default {
 .nf.is-tracking .nf-eyes { animation: none; }
 @keyframes nf-glance {
   0%, 12%, 100% { transform: translateX(0); }
-  20%, 38% { transform: translateX(-5px); }
-  48%, 66% { transform: translateX(5px); }
+  20%, 38% { transform: translateX(-4px); }
+  48%, 66% { transform: translateX(4px); }
   76% { transform: translateX(0); }
 }
 /* blink: scale each eye flat for a moment */
@@ -229,32 +209,7 @@ export default {
   95% { transform: scaleY(0.1); }
 }
 
-/* jets flicker */
-.nf-robot .nf-jets { transform-origin: top; animation: nf-jets 0.5s ease-in-out infinite alternate; }
-@keyframes nf-jets {
-  from { transform: scaleY(1); opacity: 1; }
-  to { transform: scaleY(0.6); opacity: 0.5; }
-}
-
-/* question marks float up and fade, one after the other */
-.nf-q { opacity: 0; animation: nf-q 3.6s ease-out infinite; }
-.nf-q2 { animation-delay: 1.8s; }
-@keyframes nf-q {
-  0% { opacity: 0; transform: translateY(6px) scale(0.6); }
-  20% { opacity: 1; transform: translateY(0) scale(1); }
-  70% { opacity: 0; transform: translateY(-14px) scale(1); }
-  100% { opacity: 0; }
-}
-
 /* ---- text ---- */
-.nf-eyebrow {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--c-accent);
-  margin: 0 0 12px;
-}
 .nf-title {
   font-family: Poppins, sans-serif;
   font-size: 36px;
@@ -268,19 +223,8 @@ export default {
   font-size: 16px;
   line-height: 1.7;
   color: var(--c-muted);
-  margin: 0 auto 18px;
+  margin: 0 auto 32px;
   max-width: 440px;
-}
-.nf-path { margin: 0 0 32px; }
-.nf-path code {
-  display: inline-block;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  font-size: 13px;
-  color: var(--c-muted);
-  background: none;
-  padding: 0 0 2px;
-  border-bottom: 1px dashed var(--c-rule-strong);
 }
 .nf-links {
   display: flex;
@@ -305,8 +249,6 @@ export default {
 .nf-text > :nth-child(1) { animation-delay: 0.25s; }
 .nf-text > :nth-child(2) { animation-delay: 0.33s; }
 .nf-text > :nth-child(3) { animation-delay: 0.41s; }
-.nf-text > :nth-child(4) { animation-delay: 0.49s; }
-.nf-text > :nth-child(5) { animation-delay: 0.57s; }
 @keyframes nf-drop {
   from { opacity: 0; transform: translateY(-28px); }
   to { opacity: 1; transform: none; }
@@ -326,6 +268,5 @@ export default {
   .nf-robot *,
   .nf-robot,
   .nf-text > * { animation: none !important; }
-  .nf-q { opacity: 0; }
 }
 </style>

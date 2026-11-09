@@ -50,6 +50,7 @@ import axios from 'axios'
 import BlogTopbar from '../components/blog/BlogTopbar.vue'
 import PostComments from '../components/blog/PostComments.vue'
 import NotFoundContent from '../components/NotFoundContent.vue'
+import { highlightCode } from '../components/blog/highlightCode.js'
 
 const API = 'https://public-api.wordpress.com/rest/v1.1/sites/jhedmendoza.wordpress.com/posts/'
 const WORDS_PER_MINUTE = 200
@@ -132,6 +133,7 @@ export default {
       } finally {
         this.isLoading = false
         await this.$nextTick()
+        highlightCode(this.$refs.article)
         this.updateProgress()
       }
     }
@@ -298,7 +300,42 @@ export default {
   line-height: 1.6;
   overflow-x: auto;
 }
-.post-content pre code { background: none; padding: 0; }
+.post-content pre code { background: none; padding: 0; color: var(--c-syn-text); }
+
+/* syntax highlighting (token classes from highlight.js) */
+.post-content .hljs-comment,
+.post-content .hljs-quote { color: var(--c-syn-comment); font-style: italic; }
+.post-content .hljs-keyword,
+.post-content .hljs-selector-tag,
+.post-content .hljs-meta .hljs-keyword,
+.post-content .hljs-doctag { color: var(--c-syn-keyword); }
+.post-content .hljs-string,
+.post-content .hljs-regexp,
+.post-content .hljs-meta .hljs-string { color: var(--c-syn-string); }
+.post-content .hljs-number,
+.post-content .hljs-literal,
+.post-content .hljs-symbol,
+.post-content .hljs-variable.constant_ { color: var(--c-syn-number); }
+.post-content .hljs-title,
+.post-content .hljs-title.function_,
+.post-content .hljs-section { color: var(--c-syn-function); }
+.post-content .hljs-title.class_,
+.post-content .hljs-type,
+.post-content .hljs-built_in { color: var(--c-syn-type); }
+.post-content .hljs-attr,
+.post-content .hljs-attribute,
+.post-content .hljs-property,
+.post-content .hljs-variable,
+.post-content .hljs-template-variable,
+.post-content .hljs-selector-class,
+.post-content .hljs-selector-id { color: var(--c-syn-attr); }
+.post-content .hljs-name,
+.post-content .hljs-tag { color: var(--c-syn-tag); }
+.post-content .hljs-meta,
+.post-content .hljs-params,
+.post-content .hljs-subst { color: var(--c-syn-text); }
+.post-content .hljs-addition { color: var(--c-syn-string); }
+.post-content .hljs-deletion { color: var(--c-syn-tag); }
 .post-content table {
   width: 100%;
   border-collapse: collapse;

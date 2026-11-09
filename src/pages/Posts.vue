@@ -6,12 +6,6 @@
       <p class="posts-eyebrow">Blog</p>
       <h1 class="posts-title">Notes &amp; writing</h1>
       <p class="posts-lead">Thoughts on building for the web, lessons from projects, and whatever else is on my mind.</p>
-
-      <div v-if="posts.length" class="posts-search">
-        <i class="bx bx-search" aria-hidden="true"></i>
-        <label for="posts-search" class="sr-only">Search posts</label>
-        <input id="posts-search" v-model.trim="query" type="search" placeholder="Search posts" autocomplete="off"/>
-      </div>
     </header>
 
     <div class="posts-wrap posts-main">
@@ -19,11 +13,6 @@
       <div v-else-if="error" class="posts-status posts-status-error">{{ error }}</div>
 
       <template v-else>
-        <p v-if="query && !filteredPosts.length" class="posts-status">
-          No posts match “{{ query }}”.
-          <button type="button" class="posts-clear" @click="query = ''">Clear search</button>
-        </p>
-
         <section v-for="group in groupedPosts" :key="group.year" class="posts-year" :aria-label="'Posts from ' + group.year">
           <h2 class="posts-year-label">{{ group.year }}</h2>
           <ol class="posts-list">
@@ -40,13 +29,13 @@
           </ol>
         </section>
 
-        <div v-if="hasMore && !query" class="posts-more">
+        <div v-if="hasMore" class="posts-more">
           <button type="button" class="posts-more-btn" :disabled="isLoadingMore" @click="loadMore">
             {{ isLoadingMore ? 'Loading…' : 'Load more posts' }}
           </button>
         </div>
 
-        <p v-if="!hasMore && posts.length > 0 && !query" class="posts-end">That's everything, for now.</p>
+        <p v-if="!hasMore && posts.length > 0" class="posts-end">That's everything, for now.</p>
       </template>
     </div>
 
@@ -73,7 +62,6 @@ export default {
       posts: [],
       found: 0,
       page: 1,
-      query: '',
       isLoading: true,
       isLoadingMore: false,
       error: '',
@@ -84,14 +72,9 @@ export default {
     hasMore() {
       return this.posts.length < this.found
     },
-    filteredPosts() {
-      const q = this.query.toLowerCase()
-      if (!q) return this.posts
-      return this.posts.filter(p => p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q))
-    },
     groupedPosts() {
       const groups = []
-      for (const post of this.filteredPosts) {
+      for (const post of this.posts) {
         const last = groups[groups.length - 1]
         if (last && last.year === post.year) last.posts.push(post)
         else groups.push({ year: post.year, posts: [post] })
@@ -192,49 +175,10 @@ export default {
   margin: 0;
 }
 
-/* search */
-.posts-search {
-  position: relative;
-  margin-top: 40px;
-  max-width: 360px;
-}
-.posts-search i {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  color: var(--posts-muted);
-  pointer-events: none;
-}
-.posts-search input {
-  width: 100%;
-  border: 0;
-  border-bottom: 1px solid var(--posts-rule);
-  padding: 10px 0 10px 28px;
-  font-size: 15px;
-  color: var(--posts-ink);
-  background: transparent;
-  outline: none;
-  border-radius: 0;
-  transition: border-color 0.25s ease;
-}
-.posts-search input:focus { border-bottom-color: var(--posts-accent); }
-.posts-search:focus-within i { color: var(--posts-accent); }
-
 /* list */
 .posts-main { padding-bottom: 40px; }
 .posts-status { color: var(--posts-muted); padding: 24px 0; }
 .posts-status-error { color: var(--c-error); }
-.posts-clear {
-  border: 0;
-  background: none;
-  padding: 0;
-  margin-left: 8px;
-  font-weight: 600;
-  color: var(--posts-accent);
-  cursor: pointer;
-}
 
 .posts-year {
   display: grid;
