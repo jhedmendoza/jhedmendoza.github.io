@@ -3,6 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # rebuild daily so new WordPress posts get their own share-preview page
+  schedule:
+    - cron: '0 0 * * *'
+  # "Run workflow" button in the Actions tab, for right after publishing a post
+  workflow_dispatch:
 
 permissions:
   contents: read
