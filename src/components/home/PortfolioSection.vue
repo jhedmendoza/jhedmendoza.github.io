@@ -41,8 +41,9 @@ export default {
     return {
       // w/h = the screenshot's pixel size (keeps the masonry stable while images load)
       portfolioItems: [
+        { title: 'Flight Tracker', link: 'https://flight-glance.netlify.app/', image: '/assets/img/portfolio/personal/flight_glance.png', w: 1600, h: 900 },
+        { title: 'Fantasy Hoops Stats', link: 'https://fantasy-basketball-stats.netlify.app/', image: '/assets/img/portfolio/personal/fantasy_basketball_stats.png', w: 1600, h: 900 },
         { title: 'Football Careers', link: 'https://www.footballcareers.com/', image: '/assets/img/portfolio/wordpress/football_careers.png', w: 1441, h: 703 },
-        { title: 'What Games', link: 'https://what.games/', image: '/assets/img/portfolio/zend/what_games.png', w: 1609, h: 730 },
         { title: 'Teleta', link: 'https://www.teleta.co.uk/', image: '/assets/img/portfolio/wordpress/teleta.png', w: 490, h: 742 },
         { title: 'Blok Property', link: 'https://www.blokpropertymanagement.co.uk/', image: '/assets/img/portfolio/wordpress/blok_property.png', w: 1411, h: 703 },
         { title: 'Cameron Intellectual Property', link: 'https://cameronintellectualproperty.com/', image: '/assets/img/portfolio/wordpress/cameron.png', w: 718, h: 814 },
