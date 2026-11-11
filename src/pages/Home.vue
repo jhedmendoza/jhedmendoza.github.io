@@ -77,24 +77,8 @@ export default {
   beforeUnmount() {
     window.removeEventListener('keydown', this.onSectionKey)
   },
-  async mounted() {
+  mounted() {
     window.addEventListener('keydown', this.onSectionKey)
-    // Load and initialize AOS so elements with data-aos are visible
-    try {
-      if (!window.AOS) {
-        const base = import.meta.env.BASE_URL || '/'
-        await new Promise((resolve, reject) => {
-          const s = document.createElement('script')
-          s.src = base + 'assets/vendor/aos/aos.js'
-          s.onload = resolve; s.onerror = reject; document.body.appendChild(s)
-        })
-      }
-      if (window.AOS && typeof window.AOS.init === 'function') {
-        window.AOS.init({ duration: 1000, once: true })
-      }
-    } catch (e) {
-      // non-fatal: AOS is decorative
-    }
   }
 }
 </script>

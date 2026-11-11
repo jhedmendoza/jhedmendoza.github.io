@@ -138,11 +138,6 @@ export default {
         this.isLoadingPosts = false
       }
 
-      // let AOS re-evaluate newly inserted elements (data-aos)
-      await this.$nextTick()
-      if (window.AOS && typeof window.AOS.refresh === 'function') {
-        window.AOS.refresh()
-      }
     }
   },
   mounted() {
