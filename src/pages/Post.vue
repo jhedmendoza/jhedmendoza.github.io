@@ -25,6 +25,15 @@
       <!-- content comes from my own WordPress site -->
       <div class="post-wrap post-content" v-html="post.content"></div>
 
+      <!-- plain share links: no third-party scripts, the networks read the post's prerendered tags -->
+      <div class="post-wrap">
+        <p class="post-share">
+          <span class="post-share-label">Share this post</span>
+          <a v-for="s in shareLinks" :key="s.name" :href="s.href" class="post-link"
+             target="_blank" rel="noopener noreferrer" :aria-label="`Share this post on ${s.name} (opens in a new tab)`">{{ s.name }}</a>
+        </p>
+      </div>
+
       <footer class="post-wrap post-footer">
         <div class="post-footer-author">
           <img src="/assets/img/jhed-480.webp" alt="" width="48" height="48"/>
@@ -54,12 +63,26 @@ import { highlightCode } from '../components/blog/highlightCode.js'
 
 const API = 'https://public-api.wordpress.com/rest/v1.1/sites/jhedmendoza.wordpress.com/posts/'
 const WORDS_PER_MINUTE = 200
+// shared links always point at the live site (same value as scripts/prerender-posts.mjs),
+// so a link shared from a local or preview build still gets the post's preview card
+const SITE = 'https://jhedmendoza.is-a.dev'
 
 export default {
   name: 'PostPage',
   components: { BlogTopbar, PostComments, NotFoundContent },
   data() {
     return { post: null, isLoading: true, error: '', notFound: false, progress: 0 }
+  },
+  computed: {
+    shareLinks() {
+      if (!this.post) return []
+      // the slug URL is the one with a prerendered page, so use it even on an old numeric link
+      const url = encodeURIComponent(`${SITE}/post/${this.post.slug || this.post.id}`)
+      return [
+        { name: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${url}` },
+        { name: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${url}` }
+      ]
+    }
   },
   methods: {
     stripTags(html) { const d = document.createElement('div'); d.innerHTML = html || ''; return (d.textContent || d.innerText || '').trim() },
@@ -105,6 +128,7 @@ export default {
 
         this.post = {
           id: data.ID,
+          slug: data.slug,
           title,
           excerpt: isAutoExcerpt ? '' : excerpt,
           content: data.content,
@@ -348,9 +372,25 @@ export default {
   text-align: left;
 }
 
+/* share links */
+.post-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px 24px;
+  margin: 56px 0 0;
+}
+.post-share-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--post-muted);
+}
+
 /* footer */
 .post-footer {
-  margin-top: 64px;
+  margin-top: 32px;
   padding-top: 32px;
   border-top: 1px solid var(--post-rule);
   display: flex;
