@@ -43,7 +43,8 @@ export default {
       portfolioItems: [
         { title: 'Flight Tracker', link: 'https://flight-glance.netlify.app/', image: '/assets/img/portfolio/personal/flight_glance.png', w: 1600, h: 900 },
         { title: 'Fantasy Hoops Stats', link: 'https://fantasy-basketball-stats.netlify.app/', image: '/assets/img/portfolio/personal/fantasy_basketball_stats.png', w: 1600, h: 900 },
-        { title: 'Football Careers', link: 'https://www.footballcareers.com/', image: '/assets/img/portfolio/wordpress/football_careers.png', w: 1441, h: 703 },
+        { title: 'Meal Guide', link: 'https://meal-guide.netlify.app/', image: '/assets/img/portfolio/personal/meal_guide.png', w: 1600, h: 900 },
+        { title: 'Football Careers',link: 'https://www.footballcareers.com/', image: '/assets/img/portfolio/wordpress/football_careers.png', w: 1441, h: 703 },
         { title: 'Teleta', link: 'https://www.teleta.co.uk/', image: '/assets/img/portfolio/wordpress/teleta.png', w: 490, h: 742 },
         { title: 'Blok Property', link: 'https://www.blokpropertymanagement.co.uk/', image: '/assets/img/portfolio/wordpress/blok_property.png', w: 1411, h: 703 },
         { title: 'Cameron Intellectual Property', link: 'https://cameronintellectualproperty.com/', image: '/assets/img/portfolio/wordpress/cameron.png', w: 718, h: 814 },
@@ -55,6 +56,7 @@ export default {
         { title: 'Dragon Mania Legends', link: 'https://dragonmanialegends.com/', image: '/assets/img/portfolio/zend/dragonmanialegends.jpeg', w: 1280, h: 1200 },
         { title: 'Naxos Music Box', link: 'https://www.naxosmusicbox.com/', image: '/assets/img/portfolio/wordpress/naxosmusicbox.jpeg', w: 1920, h: 1080 },
         { title: 'Naxos Audiobooks', link: 'https://naxosaudiobooks.com/', image: '/assets/img/portfolio/wordpress/naxosaudiobooks.jpeg', w: 1920, h: 1080 },
+        { title: 'Naxos Video Library', link: 'https://www.naxosvideolibrary.com/', image: '/assets/img/portfolio/naxos/naxosvideolibrary.jpeg', w: 1920, h: 800 },
         { title: 'Gameloft IN', link: '/projects/gameloft_in/', image: '/assets/img/portfolio/zend/gameloft_in.png', w: 1816, h: 867 }
       ]
     }
