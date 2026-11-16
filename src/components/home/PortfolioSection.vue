@@ -44,6 +44,7 @@ export default {
         { title: 'Flight Tracker', link: 'https://flight-glance.netlify.app/', image: '/assets/img/portfolio/personal/flight_glance.png', w: 1600, h: 900 },
         { title: 'Fantasy Hoops Stats', link: 'https://fantasy-basketball-stats.netlify.app/', image: '/assets/img/portfolio/personal/fantasy_basketball_stats.png', w: 1600, h: 900 },
         { title: 'Meal Guide', link: 'https://meal-guide.netlify.app/', image: '/assets/img/portfolio/personal/meal_guide.png', w: 1600, h: 900 },
+        { title: 'The Open Bible', link: 'https://the-open-bible.netlify.app/', image: '/assets/img/portfolio/personal/the_open_bible.png', w: 1600, h: 900 },
         { title: 'Football Careers',link: 'https://www.footballcareers.com/', image: '/assets/img/portfolio/wordpress/football_careers.png', w: 1441, h: 703 },
         { title: 'Teleta', link: 'https://www.teleta.co.uk/', image: '/assets/img/portfolio/wordpress/teleta.png', w: 490, h: 742 },
         { title: 'Blok Property', link: 'https://www.blokpropertymanagement.co.uk/', image: '/assets/img/portfolio/wordpress/blok_property.png', w: 1411, h: 703 },
